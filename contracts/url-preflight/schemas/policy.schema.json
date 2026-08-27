@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://subtube.example.invalid/contracts/url-preflight/policy.schema.json",
+  "title": "SubTube URL normalization and preflight policy",
+  "type": "object",
+  "required": [
+    "$schema",
+    "contractVersion",
+    "issue",
+    "release",
+    "endpoint",
+    "sourceContract",
+    "normalization",
+    "requestOrder",
+    "preflight",
+    "providerEntryGuards",
+    "handoff",
+    "rejectionEffects",
+    "openDecisions"
+  ],
+  "properties": {
+    "$schema": { "const": "./schemas/policy.schema.json" },
+    "contractVersion": { "const": "1.0.0" },
+    "issue": { "const": 1725 },
+    "release": { "const": "A" },
+    "endpoint": { "const": "POST /v1/parse-jobs" },
+    "sourceContract": { "const": "../release-a/openapi.json" },
+    "normalization": {
+      "type": "object",
+      "required": [
+        "acceptedSchemes",
+        "acceptedForms",
+        "videoIdPattern",
+        "canonicalUrlTemplate",
+        "stripTrackingQuery",
+        "stripFragment",
+        "rejectAmbiguousVideoIds",
+        "idempotencyFingerprintUsesRawBody"
+      ],
+      "properties": {
+        "acceptedSchemes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "acceptedForms": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["host", "path", "videoIdLocation"],
+            "properties": {
+              "host": { "type": "string", "minLength": 1 },
+              "path": { "type": "string", "minLength": 1 },
+              "videoIdLocation": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "videoIdPattern": { "type": "string", "minLength": 1 },
+        "canonicalUrlTemplate": { "type": "string", "minLength": 1 },
+        "stripTrackingQuery": { "type": "boolean" },
+        "stripFragment": { "type": "boolean" },
+        "rejectAmbiguousVideoIds": { "type": "boolean" },
+        "idempotencyFingerprintUsesRawBody": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "requestOrder": {
+      "type": "array",
+      "minItems": 10,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "preflight": {
+      "type": "object",
+      "required": ["maximumDurationSeconds", "sourceLanguage", "captionLanguage", "gateOrder", "errors"],
+      "properties": {
+        "maximumDurationSeconds": { "const": 900 },
+        "sourceLanguage": { "const": "en" },
+        "captionLanguage": { "const": "en" },
+        "gateOrder": { "type": "array", "minItems": 6, "items": { "type": "string" } },
+        "errors": {
+          "type": "object",
+          "required": ["visibility", "live", "embeddability", "duration", "language", "captions"],
+          "properties": {
+            "visibility": { "const": "video_private" },
+            "live": { "const": "video_live" },
+            "embeddability": { "const": "video_not_embeddable" },
+            "duration": { "const": "video_too_long" },
+            "language": { "const": "non_english" },
+            "captions": { "const": "captions_unavailable" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "providerEntryGuards": {
+      "type": "object",
+      "required": ["quota", "cost"],
+      "properties": {
+        "quota": {
+          "type": "object",
+          "required": ["errorCode", "wireShape", "jobMayExist", "mustRunBeforeSourceProbe"],
+          "properties": {
+            "errorCode": { "const": "quota_exceeded" },
+            "wireShape": { "const": "APIError" },
+            "jobMayExist": { "const": false },
+            "mustRunBeforeSourceProbe": { "const": true }
+          },
+          "additionalProperties": false
+        },
+        "cost": {
+          "type": "object",
+          "required": [
+            "errorCode",
+            "wireShape",
+            "jobMayExist",
+            "mustRunBeforeAsyncCaptionOrTranslationProvider",
+            "thresholdEvidence"
+          ],
+          "properties": {
+            "errorCode": { "const": "cost_limit_exceeded" },
+            "wireShape": { "const": "ProcessingJob(status=failed)" },
+            "jobMayExist": { "const": true },
+            "mustRunBeforeAsyncCaptionOrTranslationProvider": { "const": true },
+            "thresholdEvidence": { "const": "NOT_RUN_D2" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "handoff": {
+      "type": "object",
+      "required": ["dedupeKeyFields", "sourceLanguage", "targetLanguage", "pipelineVersionFixture"],
+      "properties": {
+        "dedupeKeyFields": { "type": "array", "minItems": 4, "items": { "type": "string" } },
+        "sourceLanguage": { "const": "en" },
+        "targetLanguage": { "const": "zh-Hant-TW" },
+        "pipelineVersionFixture": { "const": "release-a-caption-v1" }
+      },
+      "additionalProperties": false
+    },
+    "rejectionEffects": {
+      "type": "object",
+      "required": [
+        "jobCreated",
+        "jobIdReturned",
+        "captionPipelineStarts",
+        "translationCalls",
+        "audioDownloads",
+        "sttCalls"
+      ],
+      "properties": {
+        "jobCreated": { "const": false },
+        "jobIdReturned": { "const": false },
+        "captionPipelineStarts": { "const": 0 },
+        "translationCalls": { "const": 0 },
+        "audioDownloads": { "const": 0 },
+        "sttCalls": { "const": 0 }
+      },
+      "additionalProperties": false
+    },
+    "openDecisions": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["id", "state", "decision"],
+        "properties": {
+          "id": { "type": "string", "enum": ["D2-A", "D3-A", "UP-01", "UP-02"] },
+          "state": { "const": "OPEN" },
+          "decision": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

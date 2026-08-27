@@ -1,0 +1,350 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SubTube Release A Contract",
+    "version": "1.0.0-release-a",
+    "description": "Normative machine-readable contract for issue #1717. Release A is caption-only; STT and transcribing are excluded."
+  },
+  "servers": [
+    {
+      "url": "https://api.example.invalid"
+    }
+  ],
+  "x-release-a-invariants": [
+    "POST /v1/parse-jobs performs preflight and job creation in one request.",
+    "A definitive POST APIError means no job was created; a committed job with a lost response is recovered by replaying the same Idempotency-Key.",
+    "A preflight rejection returns APIError without jobId and starts no asynchronous caption pipeline, audio, STT, or translation work.",
+    "Release A job statuses are queued, fetching_captions, translating, ready, and failed.",
+    "Release A learning data has transcriptSource=caption; words may be empty.",
+    "Every Release A path performs zero audio downloads and zero STT calls; caption processing never enters an audio pipeline.",
+    "The same Idempotency-Key and canonical request replay the same response for at least 24 hours.",
+    "Different Idempotency-Keys sharing a dedupe key reuse a ready or in-flight result.",
+    "A failed job is never served as a successful cache hit."
+  ],
+  "x-result-cache-retention": {
+    "successDays": 7,
+    "purgeEvidence": "NOT_RUN_D5"
+  },
+  "x-pipeline-identity": {
+    "canonicalVersion": "release-a-caption-v1",
+    "dedupeKeyFields": ["videoId", "sourceLanguage", "targetLanguage", "pipelineVersion"],
+    "identityChangeReusesOldCacheOrOwner": false
+  },
+  "x-error-contract": {
+    "invalid_url": { "httpStatus": 400, "messageKey": "parse.error.invalidURL", "retryable": false, "phase": "preflight" },
+    "idempotency_conflict": { "httpStatus": 409, "messageKey": "parse.error.idempotencyConflict", "retryable": false, "phase": "request" },
+    "unsupported_source": { "httpStatus": 422, "messageKey": "parse.error.unsupportedSource", "retryable": false, "phase": "preflight" },
+    "video_private": { "httpStatus": 422, "messageKey": "parse.error.privateVideo", "retryable": false, "phase": "preflight" },
+    "video_live": { "httpStatus": 422, "messageKey": "parse.error.liveVideo", "retryable": false, "phase": "preflight" },
+    "video_not_embeddable": { "httpStatus": 422, "messageKey": "parse.error.notEmbeddable", "retryable": false, "phase": "preflight" },
+    "video_too_long": { "httpStatus": 422, "messageKey": "parse.error.videoTooLong", "retryable": false, "phase": "preflight" },
+    "non_english": { "httpStatus": 422, "messageKey": "parse.error.nonEnglish", "retryable": false, "phase": "preflight" },
+    "captions_unavailable": { "httpStatus": 422, "messageKey": "parse.error.captionsUnavailable", "retryable": false, "phase": "preflight" },
+    "unsupported_target_language": { "httpStatus": 422, "messageKey": "parse.error.unsupportedTargetLanguage", "retryable": false, "phase": "preflight" },
+    "rate_limited": { "httpStatus": 429, "messageKey": "parse.error.rateLimited", "retryable": true, "phase": "request" },
+    "quota_exceeded": { "httpStatus": 429, "messageKey": "parse.error.quotaExceeded", "retryable": false, "phase": "request" },
+    "concurrent_job_limit": { "httpStatus": 429, "messageKey": "parse.error.concurrentJobLimit", "retryable": true, "phase": "request" },
+    "caption_fetch_failed": { "httpStatus": 200, "messageKey": "parse.error.captionFetchFailed", "retryable": true, "phase": "job" },
+    "translation_provider_failed": { "httpStatus": 200, "messageKey": "parse.error.translationProviderFailed", "retryable": true, "phase": "job" },
+    "translation_invalid_response": { "httpStatus": 200, "messageKey": "parse.error.translationInvalidResponse", "retryable": true, "phase": "job" },
+    "processing_timeout": { "httpStatus": 200, "messageKey": "parse.error.processingTimeout", "retryable": true, "phase": "job" },
+    "cost_limit_exceeded": { "httpStatus": 200, "messageKey": "parse.error.costLimitExceeded", "retryable": false, "phase": "job" },
+    "processing_internal_error": { "httpStatus": 200, "messageKey": "parse.error.processingInternal", "retryable": true, "phase": "job" },
+    "internal_error": { "httpStatus": 500, "messageKey": "parse.error.internal", "retryable": true, "phase": "request" },
+    "service_unavailable": { "httpStatus": 503, "messageKey": "parse.error.serviceUnavailable", "retryable": true, "phase": "request" },
+    "job_not_found": { "httpStatus": 404, "messageKey": "parse.error.jobNotFound", "retryable": false, "phase": "lookup" },
+    "learning_data_not_found": { "httpStatus": 404, "messageKey": "parse.error.learningDataNotFound", "retryable": true, "phase": "lookup" },
+    "learning_data_expired": { "httpStatus": 410, "messageKey": "parse.error.learningDataExpired", "retryable": false, "phase": "lookup" }
+  },
+  "paths": {
+    "/v1/parse-jobs": {
+      "post": {
+        "operationId": "createOrReuseParseJob",
+        "summary": "Run preflight and create or reuse a caption parse job",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "A client-generated UUID persisted before the first network attempt.",
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ParseJobRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A ready result was reused. The response may also be an exact idempotency replay of a prior 200.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProcessingJob" } } }
+          },
+          "202": {
+            "description": "A new job was accepted or an in-flight dedupe result was reused.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProcessingJob" } } }
+          },
+          "400": { "$ref": "#/components/responses/APIErrorResponse" },
+          "409": { "$ref": "#/components/responses/APIErrorResponse" },
+          "422": { "$ref": "#/components/responses/APIErrorResponse" },
+          "429": { "$ref": "#/components/responses/RateLimitedErrorResponse" },
+          "500": { "$ref": "#/components/responses/APIErrorResponse" },
+          "503": { "$ref": "#/components/responses/APIErrorResponse" }
+        }
+      }
+    },
+    "/v1/parse-jobs/{jobId}": {
+      "get": {
+        "operationId": "getParseJob",
+        "summary": "Read the authoritative backend job state",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "minLength": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current job snapshot. A failed job is represented by HTTP 200 plus status=failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProcessingJob" } } }
+          },
+          "404": { "$ref": "#/components/responses/APIErrorResponse" },
+          "500": { "$ref": "#/components/responses/APIErrorResponse" },
+          "503": { "$ref": "#/components/responses/APIErrorResponse" }
+        }
+      }
+    },
+    "/v1/videos/{videoId}/learning-data": {
+      "get": {
+        "operationId": "getLearningData",
+        "summary": "Read a ready caption-only learning document",
+        "parameters": [
+          {
+            "name": "videoId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "minLength": 1 }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": true,
+            "schema": { "const": "zh-Hant-TW" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Release A learning data. Empty words arrays are valid.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LearningDocument" } } }
+          },
+          "404": { "$ref": "#/components/responses/APIErrorResponse" },
+          "410": { "$ref": "#/components/responses/APIErrorResponse" },
+          "500": { "$ref": "#/components/responses/APIErrorResponse" },
+          "503": { "$ref": "#/components/responses/APIErrorResponse" }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "APIErrorResponse": {
+        "description": "Request-level API error. It never contains a jobId.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/APIError" } } }
+      },
+      "RateLimitedErrorResponse": {
+        "description": "Request rejected before job creation. Retry-After communicates the wait or reset interval.",
+        "headers": {
+          "Retry-After": {
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 },
+            "description": "Seconds until the request may be attempted again or the quota window resets."
+          }
+        },
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/APIError" } } }
+      }
+    },
+    "schemas": {
+      "ParseJobRequest": {
+        "type": "object",
+        "required": ["url", "targetLanguage"],
+        "properties": {
+          "url": { "type": "string", "minLength": 1 },
+          "targetLanguage": { "const": "zh-Hant-TW" }
+        },
+        "additionalProperties": false
+      },
+      "ProcessingStatus": {
+        "type": "string",
+        "enum": ["queued", "fetching_captions", "translating", "ready", "failed"]
+      },
+      "JobErrorCode": {
+        "type": "string",
+        "enum": [
+          "caption_fetch_failed",
+          "translation_provider_failed",
+          "translation_invalid_response",
+          "processing_timeout",
+          "cost_limit_exceeded",
+          "processing_internal_error"
+        ]
+      },
+      "APIErrorCode": {
+        "type": "string",
+        "enum": [
+          "invalid_url",
+          "idempotency_conflict",
+          "unsupported_source",
+          "video_private",
+          "video_live",
+          "video_not_embeddable",
+          "video_too_long",
+          "non_english",
+          "captions_unavailable",
+          "unsupported_target_language",
+          "rate_limited",
+          "quota_exceeded",
+          "concurrent_job_limit",
+          "job_not_found",
+          "learning_data_not_found",
+          "learning_data_expired",
+          "internal_error",
+          "service_unavailable"
+        ]
+      },
+      "ProcessingJob": {
+        "type": "object",
+        "required": [
+          "jobId",
+          "videoId",
+          "title",
+          "duration",
+          "status",
+          "errorCode",
+          "errorMessageKey",
+          "retryable",
+          "learningDataPath",
+          "updatedAt"
+        ],
+        "properties": {
+          "jobId": { "type": "string", "minLength": 1 },
+          "videoId": { "type": "string", "minLength": 1 },
+          "title": { "type": ["string", "null"] },
+          "duration": { "type": "number", "exclusiveMinimum": 0, "maximum": 900 },
+          "status": { "$ref": "#/components/schemas/ProcessingStatus" },
+          "errorCode": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/JobErrorCode" },
+              { "type": "null" }
+            ]
+          },
+          "errorMessageKey": { "type": ["string", "null"] },
+          "retryable": { "type": "boolean" },
+          "learningDataPath": {
+            "oneOf": [
+              { "type": "string", "pattern": "^/v1/videos/[^/]+/learning-data\\?target=zh-Hant-TW$" },
+              { "type": "null" }
+            ]
+          },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "properties": {
+              "status": { "enum": ["queued", "fetching_captions", "translating"] },
+              "errorCode": { "type": "null" },
+              "errorMessageKey": { "type": "null" },
+              "retryable": { "const": false },
+              "learningDataPath": { "type": "null" }
+            }
+          },
+          {
+            "properties": {
+              "status": { "const": "ready" },
+              "errorCode": { "type": "null" },
+              "errorMessageKey": { "type": "null" },
+              "retryable": { "const": false },
+              "learningDataPath": { "type": "string", "pattern": "^/v1/videos/[^/]+/learning-data\\?target=zh-Hant-TW$" }
+            }
+          },
+          {
+            "required": ["errorCode", "errorMessageKey"],
+            "properties": {
+              "status": { "const": "failed" },
+              "errorCode": { "$ref": "#/components/schemas/JobErrorCode" },
+              "errorMessageKey": { "type": "string", "minLength": 1 },
+              "retryable": { "type": "boolean" },
+              "learningDataPath": { "type": "null" }
+            }
+          }
+        ]
+      },
+      "APIError": {
+        "type": "object",
+        "required": ["errorCode", "errorMessageKey", "retryable"],
+        "properties": {
+          "errorCode": { "$ref": "#/components/schemas/APIErrorCode" },
+          "errorMessageKey": { "type": "string", "minLength": 1 },
+          "retryable": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      },
+      "LearningDocument": {
+        "type": "object",
+        "required": [
+          "videoId",
+          "sourceLanguage",
+          "targetLanguage",
+          "pipelineVersion",
+          "transcriptSource",
+          "segments"
+        ],
+        "properties": {
+          "videoId": { "type": "string", "minLength": 1 },
+          "sourceLanguage": { "const": "en" },
+          "targetLanguage": { "const": "zh-Hant-TW" },
+          "pipelineVersion": { "const": "release-a-caption-v1" },
+          "transcriptSource": { "const": "caption" },
+          "segments": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/components/schemas/SubtitleSegment" }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubtitleSegment": {
+        "type": "object",
+        "required": ["id", "startTime", "endTime", "originalText", "translatedText", "words"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "startTime": { "type": "number", "minimum": 0 },
+          "endTime": { "type": "number", "exclusiveMinimum": 0 },
+          "originalText": { "type": "string", "minLength": 1 },
+          "translatedText": { "type": "string", "minLength": 1 },
+          "words": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WordTimestamp" }
+          }
+        },
+        "additionalProperties": false
+      },
+      "WordTimestamp": {
+        "type": "object",
+        "required": ["id", "word", "start", "end"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "word": { "type": "string", "minLength": 1 },
+          "start": { "type": "number", "minimum": 0 },
+          "end": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

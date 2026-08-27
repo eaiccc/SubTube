@@ -1,0 +1,33 @@
+{
+  "case": "normal_poll_fetching_captions",
+  "request": {
+    "method": "GET",
+    "path": "/v1/parse-jobs/job-release-a-001",
+    "headers": {},
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-001",
+      "videoId": "abcdefghijk",
+      "title": "Release A fixture",
+      "duration": 120.5,
+      "status": "fetching_captions",
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": null,
+      "updatedAt": "2026-08-25T06:00:03Z"
+    }
+  },
+  "expectedEffects": {
+    "jobCreated": false,
+    "captionPipelineStarted": true,
+    "translationPipelineStarted": false,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

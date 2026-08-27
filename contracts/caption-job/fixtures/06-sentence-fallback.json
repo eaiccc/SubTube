@@ -1,0 +1,36 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "sentence_fallback",
+  "cases": [
+    {
+      "case": "caption_document_with_empty_words_remains_ready",
+      "learningDataPath": "/v1/videos/Boundary900/learning-data?target=zh-Hant-TW",
+      "document": {
+        "videoId": "Boundary900",
+        "sourceLanguage": "en",
+        "targetLanguage": "zh-Hant-TW",
+        "pipelineVersion": "release-a-caption-v1",
+        "transcriptSource": "caption",
+        "segments": [
+          {
+            "id": "seg-fallback-001",
+            "startTime": 0,
+            "endTime": 2.5,
+            "originalText": "Sentence timing is sufficient.",
+            "translatedText": "句子時間軸已足夠使用。",
+            "words": []
+          },
+          {
+            "id": "seg-fallback-002",
+            "startTime": 2.5,
+            "endTime": 5,
+            "originalText": "Word timing is optional.",
+            "translatedText": "單字時間軸是選用資訊。",
+            "words": []
+          }
+        ]
+      },
+      "expectedEffects": { "documentAccepted": true, "sentenceSeekEnabled": true, "wordHighlightEnabled": false, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+    }
+  ]
+}

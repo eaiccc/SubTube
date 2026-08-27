@@ -1,0 +1,29 @@
+{
+  "case": "unsupported_live_video",
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "99999999-9999-4999-8999-999999999999" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=livevideo01",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 422,
+    "headers": {},
+    "bodySchema": "APIError",
+    "body": {
+      "errorCode": "video_live",
+      "errorMessageKey": "parse.error.liveVideo",
+      "retryable": false
+    }
+  },
+  "expectedEffects": {
+    "jobCreated": false,
+    "captionPipelineStarts": 0,
+    "translationCalls": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

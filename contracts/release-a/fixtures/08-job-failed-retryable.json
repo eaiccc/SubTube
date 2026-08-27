@@ -1,0 +1,32 @@
+{
+  "case": "translation_provider_failed",
+  "request": {
+    "method": "GET",
+    "path": "/v1/parse-jobs/job-release-a-002",
+    "headers": {},
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-002",
+      "videoId": "failure0001",
+      "title": "Provider failure fixture",
+      "duration": 88.0,
+      "status": "failed",
+      "errorCode": "translation_provider_failed",
+      "errorMessageKey": "parse.error.translationProviderFailed",
+      "retryable": true,
+      "learningDataPath": null,
+      "updatedAt": "2026-08-25T06:10:00Z"
+    }
+  },
+  "expectedEffects": {
+    "successfulCacheWritten": false,
+    "retryActionVisible": true,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "polling_lifecycle",
+  "cases": [
+    {
+      "case": "foreground_poll_background_stop_and_immediate_resume",
+      "jobId": "job-polling-001",
+      "events": [
+        {
+          "offsetSeconds": 0,
+          "event": "processing_view_entered",
+          "appState": "foreground",
+          "action": "get_job_immediately",
+          "responseStatus": "queued",
+          "expectedEffects": { "getRequestsDelta": 1, "jobCreatesDelta": 0, "jobMutationsDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "offsetSeconds": 3,
+          "event": "poll_interval_elapsed",
+          "appState": "foreground",
+          "action": "get_job",
+          "responseStatus": "fetching_captions",
+          "expectedEffects": { "getRequestsDelta": 1, "jobCreatesDelta": 0, "jobMutationsDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "offsetSeconds": 4,
+          "event": "app_backgrounded",
+          "appState": "background",
+          "action": "stop_periodic_polling",
+          "responseStatus": "fetching_captions",
+          "expectedEffects": { "getRequestsDelta": 0, "jobCreatesDelta": 0, "jobMutationsDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "offsetSeconds": 6,
+          "event": "poll_interval_suppressed",
+          "appState": "background",
+          "action": "none",
+          "responseStatus": "fetching_captions",
+          "expectedEffects": { "getRequestsDelta": 0, "jobCreatesDelta": 0, "jobMutationsDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "offsetSeconds": 9,
+          "event": "poll_interval_suppressed",
+          "appState": "background",
+          "action": "none",
+          "responseStatus": "fetching_captions",
+          "expectedEffects": { "getRequestsDelta": 0, "jobCreatesDelta": 0, "jobMutationsDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "offsetSeconds": 12,
+          "event": "app_foregrounded",
+          "appState": "foreground",
+          "action": "get_job_immediately",
+          "responseStatus": "translating",
+          "expectedEffects": { "getRequestsDelta": 1, "jobCreatesDelta": 0, "jobMutationsDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "offsetSeconds": 15,
+          "event": "poll_interval_elapsed",
+          "appState": "foreground",
+          "action": "get_job_and_stop_on_terminal",
+          "responseStatus": "ready",
+          "expectedEffects": { "getRequestsDelta": 1, "jobCreatesDelta": 0, "jobMutationsDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        }
+      ],
+      "expected": {
+        "periodicIntervalSeconds": 3,
+        "backgroundGetRequests": 0,
+        "foregroundResumeDelaySeconds": 0,
+        "transportFailureCreatesFailedSnapshot": false,
+        "terminalSnapshotStopsPolling": true
+      }
+    }
+  ]
+}

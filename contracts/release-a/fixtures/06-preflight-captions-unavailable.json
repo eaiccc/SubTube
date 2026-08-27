@@ -1,0 +1,29 @@
+{
+  "case": "release_a_captions_unavailable",
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "22222222-2222-4222-8222-222222222222" },
+    "body": {
+      "url": "https://youtu.be/lmnopqrstuv",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 422,
+    "headers": {},
+    "bodySchema": "APIError",
+    "body": {
+      "errorCode": "captions_unavailable",
+      "errorMessageKey": "parse.error.captionsUnavailable",
+      "retryable": false
+    }
+  },
+  "expectedEffects": {
+    "jobCreated": false,
+    "captionPipelineStarts": 0,
+    "translationCalls": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

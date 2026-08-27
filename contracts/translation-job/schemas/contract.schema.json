@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://subtube.invalid/contracts/translation-job/contract.schema.json",
+  "title": "SubTube Release A translation job contract",
+  "type": "object",
+  "required": [
+    "$schema",
+    "contractVersion",
+    "issue",
+    "release",
+    "pipelineIdentity",
+    "adapter",
+    "retryPolicy",
+    "failureMappings",
+    "security",
+    "costOracle",
+    "releaseARedLines",
+    "notRun"
+  ],
+  "properties": {
+    "$schema": { "const": "./schemas/contract.schema.json" },
+    "contractVersion": { "const": "1.0.0" },
+    "issue": { "const": 1718 },
+    "release": { "const": "A" },
+    "pipelineIdentity": {
+      "type": "object",
+      "required": [
+        "pipelineVersion",
+        "dedupeKeyFields",
+        "identityChangeReusesOldSuccessCache",
+        "identityChangeReusesOldInFlightOwner"
+      ],
+      "properties": {
+        "pipelineVersion": { "const": "release-a-caption-v1" },
+        "dedupeKeyFields": { "const": ["videoId", "sourceLanguage", "targetLanguage", "pipelineVersion"] },
+        "identityChangeReusesOldSuccessCache": { "type": "boolean", "const": false },
+        "identityChangeReusesOldInFlightOwner": { "type": "boolean", "const": false }
+      },
+      "additionalProperties": false
+    },
+    "adapter": {
+      "type": "object",
+      "required": [
+        "executionBoundary",
+        "provider",
+        "endpoint",
+        "modelSnapshot",
+        "reasoningEffort",
+        "structuredOutputs",
+        "inputSchema",
+        "outputSchema",
+        "inputTokenBudgetPerAttempt",
+        "outputTokenBudgetPerAttempt",
+        "timeoutMs",
+        "modelFallbacks"
+      ],
+      "properties": {
+        "executionBoundary": { "const": "server_only" },
+        "provider": { "const": "OpenAI API" },
+        "endpoint": { "const": "Responses API" },
+        "modelSnapshot": { "const": "gpt-5.4-mini-2026-03-17" },
+        "reasoningEffort": { "const": "none" },
+        "structuredOutputs": { "type": "boolean", "const": true },
+        "inputSchema": { "const": "./schemas/translation-input.schema.json" },
+        "outputSchema": { "const": "./schemas/translation-output.schema.json" },
+        "inputTokenBudgetPerAttempt": { "const": 12000 },
+        "outputTokenBudgetPerAttempt": { "const": 12000 },
+        "timeoutMs": { "const": 20000 },
+        "modelFallbacks": { "const": [] }
+      },
+      "additionalProperties": false
+    },
+    "retryPolicy": {
+      "type": "object",
+      "required": [
+        "retryOn",
+        "maxAutomaticRetries",
+        "maxAttempts",
+        "providerFailureAutomaticRetries"
+      ],
+      "properties": {
+        "retryOn": { "const": ["translation_schema_or_semantic_invalid"] },
+        "maxAutomaticRetries": { "const": 1 },
+        "maxAttempts": { "const": 2 },
+        "providerFailureAutomaticRetries": { "const": 0 }
+      },
+      "additionalProperties": false
+    },
+    "failureMappings": {
+      "type": "object",
+      "required": ["invalidResponse", "providerFailure"],
+      "properties": {
+        "invalidResponse": {
+          "type": "object",
+          "required": ["errorCode", "errorMessageKey", "retryable", "successfulCacheWritten"],
+          "properties": {
+            "errorCode": { "const": "translation_invalid_response" },
+            "errorMessageKey": { "const": "parse.error.translationInvalidResponse" },
+            "retryable": { "type": "boolean", "const": true },
+            "successfulCacheWritten": { "type": "boolean", "const": false }
+          },
+          "additionalProperties": false
+        },
+        "providerFailure": {
+          "type": "object",
+          "required": ["errorCode", "errorMessageKey", "retryable", "successfulCacheWritten"],
+          "properties": {
+            "errorCode": { "const": "translation_provider_failed" },
+            "errorMessageKey": { "const": "parse.error.translationProviderFailed" },
+            "retryable": { "type": "boolean", "const": true },
+            "successfulCacheWritten": { "type": "boolean", "const": false }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "required": [
+        "credentialBoundary",
+        "credentialStorage",
+        "credentialForwardedToClient",
+        "credentialPersistedInFixtures",
+        "credentialLogged",
+        "rawProviderPayloadLogged"
+      ],
+      "properties": {
+        "credentialBoundary": { "const": "server_only" },
+        "credentialStorage": { "const": "server_secret_store" },
+        "credentialForwardedToClient": { "type": "boolean", "const": false },
+        "credentialPersistedInFixtures": { "type": "boolean", "const": false },
+        "credentialLogged": { "type": "boolean", "const": false },
+        "rawProviderPayloadLogged": { "type": "boolean", "const": false }
+      },
+      "additionalProperties": false
+    },
+    "costOracle": {
+      "type": "object",
+      "required": ["baseWorstCaseUsd", "regionalWorstCaseUsd", "hardCapUsd", "runtimeMetering"],
+      "properties": {
+        "baseWorstCaseUsd": { "const": 0.126 },
+        "regionalWorstCaseUsd": { "const": 0.1386 },
+        "hardCapUsd": { "const": 0.15 },
+        "runtimeMetering": { "const": "NOT_RUN" }
+      },
+      "additionalProperties": false
+    },
+    "releaseARedLines": {
+      "type": "object",
+      "required": ["audioDownloads", "sttCalls", "forbiddenStatuses", "allowedTranscriptSources"],
+      "properties": {
+        "audioDownloads": { "const": 0 },
+        "sttCalls": { "const": 0 },
+        "forbiddenStatuses": { "const": ["transcribing"] },
+        "allowedTranscriptSources": { "const": ["caption"] }
+      },
+      "additionalProperties": false
+    },
+    "notRun": {
+      "const": [
+        "API_SERVER_AND_QUEUE_RUNTIME",
+        "OPENAI_PROVIDER_EXECUTION",
+        "CAPTION_PROVIDER_EXECUTION",
+        "BILLING_AND_COST_METERING",
+        "LATENCY_CONCURRENCY_AND_LOAD",
+        "TRANSLATION_QUALITY_AND_STAGING",
+        "IOS_BUILD_AND_INTEGRATION",
+        "DEPLOYMENT_AND_TESTFLIGHT"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

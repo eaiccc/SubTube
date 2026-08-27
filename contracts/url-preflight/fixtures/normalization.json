@@ -1,0 +1,172 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "normalization",
+  "cases": [
+    {
+      "case": "watch_url_strips_tracking_and_fragment",
+      "input": { "url": "https://www.youtube.com/watch?v=AbCdEf12_-3&utm_source=test&si=tracking#chapter" },
+      "expected": {
+        "accepted": true,
+        "videoId": "AbCdEf12_-3",
+        "canonicalUrl": "https://www.youtube.com/watch?v=AbCdEf12_-3",
+        "idempotencyFingerprintUrl": "https://www.youtube.com/watch?v=AbCdEf12_-3&utm_source=test&si=tracking#chapter"
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "short_url_strips_tracking",
+      "input": { "url": "https://youtu.be/AbCdEf12_-3?si=tracking&t=12" },
+      "expected": {
+        "accepted": true,
+        "videoId": "AbCdEf12_-3",
+        "canonicalUrl": "https://www.youtube.com/watch?v=AbCdEf12_-3",
+        "idempotencyFingerprintUrl": "https://youtu.be/AbCdEf12_-3?si=tracking&t=12"
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "blank_url_is_invalid",
+      "input": { "url": "   " },
+      "expected": {
+        "accepted": false,
+        "httpStatus": 400,
+        "errorCode": "invalid_url",
+        "errorMessageKey": "parse.error.invalidURL",
+        "retryable": false
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "non_youtube_host_is_unsupported",
+      "input": { "url": "https://example.com/watch?v=AbCdEf12_-3" },
+      "expected": {
+        "accepted": false,
+        "httpStatus": 422,
+        "errorCode": "unsupported_source",
+        "errorMessageKey": "parse.error.unsupportedSource",
+        "retryable": false
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "deceptive_youtube_suffix_is_unsupported",
+      "input": { "url": "https://www.youtube.com.evil.example/watch?v=AbCdEf12_-3" },
+      "expected": {
+        "accepted": false,
+        "httpStatus": 422,
+        "errorCode": "unsupported_source",
+        "errorMessageKey": "parse.error.unsupportedSource",
+        "retryable": false
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "watch_url_missing_video_id_is_invalid",
+      "input": { "url": "https://www.youtube.com/watch?si=tracking" },
+      "expected": {
+        "accepted": false,
+        "httpStatus": 400,
+        "errorCode": "invalid_url",
+        "errorMessageKey": "parse.error.invalidURL",
+        "retryable": false
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "short_url_missing_video_id_is_invalid",
+      "input": { "url": "https://youtu.be/?si=tracking" },
+      "expected": {
+        "accepted": false,
+        "httpStatus": 400,
+        "errorCode": "invalid_url",
+        "errorMessageKey": "parse.error.invalidURL",
+        "retryable": false
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "duplicate_video_id_is_invalid",
+      "input": { "url": "https://www.youtube.com/watch?v=AbCdEf12_-3&v=ZyXwVu98_-7" },
+      "expected": {
+        "accepted": false,
+        "httpStatus": 400,
+        "errorCode": "invalid_url",
+        "errorMessageKey": "parse.error.invalidURL",
+        "retryable": false
+      },
+      "expectedEffects": {
+        "jobCreated": false,
+        "jobIdReturned": false,
+        "sourceMetadataCalls": 0,
+        "captionAvailabilityCalls": 0,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    }
+  ]
+}

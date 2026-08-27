@@ -1,0 +1,101 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "normal_flow",
+  "cases": [
+    {
+      "case": "preflight_handoff_to_caption_ready",
+      "sourcePreflightCase": "public_captioned_english_900_seconds_is_accepted",
+      "snapshots": [
+        {
+          "event": "post_accepted",
+          "body": {
+            "jobId": "job-url-preflight-001",
+            "videoId": "Boundary900",
+            "title": "Boundary fixture",
+            "duration": 900,
+            "status": "queued",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": null,
+            "updatedAt": "2026-08-26T02:00:00Z"
+          },
+          "expectedEffects": { "jobCreatesDelta": 1, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "event": "poll_fetching_captions",
+          "body": {
+            "jobId": "job-url-preflight-001",
+            "videoId": "Boundary900",
+            "title": "Boundary fixture",
+            "duration": 900,
+            "status": "fetching_captions",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": null,
+            "updatedAt": "2026-08-26T02:00:03Z"
+          },
+          "expectedEffects": { "jobCreatesDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "event": "poll_translating",
+          "body": {
+            "jobId": "job-url-preflight-001",
+            "videoId": "Boundary900",
+            "title": "Boundary fixture",
+            "duration": 900,
+            "status": "translating",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": null,
+            "updatedAt": "2026-08-26T02:00:06Z"
+          },
+          "expectedEffects": { "jobCreatesDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        },
+        {
+          "event": "poll_ready",
+          "body": {
+            "jobId": "job-url-preflight-001",
+            "videoId": "Boundary900",
+            "title": "Boundary fixture",
+            "duration": 900,
+            "status": "ready",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": "/v1/videos/Boundary900/learning-data?target=zh-Hant-TW",
+            "updatedAt": "2026-08-26T02:00:09Z"
+          },
+          "expectedEffects": { "jobCreatesDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+        }
+      ],
+      "workerEffects": {
+        "activeOwnerMaximum": 1,
+        "captionPipelineStartsTotal": 1,
+        "translationCallsTotal": 1,
+        "readyResultPersistedBeforeReady": true,
+        "audioDownloadsTotal": 0,
+        "sttCallsTotal": 0
+      },
+      "learningDocument": {
+        "videoId": "Boundary900",
+        "sourceLanguage": "en",
+        "targetLanguage": "zh-Hant-TW",
+        "pipelineVersion": "release-a-caption-v1",
+        "transcriptSource": "caption",
+        "segments": [
+          {
+            "id": "seg-boundary-001",
+            "startTime": 0,
+            "endTime": 3,
+            "originalText": "Welcome to this captioned video.",
+            "translatedText": "歡迎收看這支有字幕的影片。",
+            "words": []
+          }
+        ]
+      }
+    }
+  ]
+}

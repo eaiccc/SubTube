@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "$schema",
+    "contractVersion",
+    "issue",
+    "release",
+    "dependencies",
+    "preflightHandoff",
+    "stateMachine",
+    "stateFields",
+    "polling",
+    "identity",
+    "completion",
+    "releaseAEffects",
+    "openDecisions",
+    "notRun"
+  ],
+  "properties": {
+    "$schema": { "const": "./schemas/lifecycle.schema.json" },
+    "contractVersion": { "const": "1.0.0" },
+    "issue": { "const": 1727 },
+    "release": { "const": "A" },
+    "dependencies": {
+      "type": "object",
+      "required": ["wireContract", "preflightPolicy", "preflightAcceptedFixture"],
+      "properties": {
+        "wireContract": { "const": "../release-a/openapi.json" },
+        "preflightPolicy": { "const": "../url-preflight/policy.json" },
+        "preflightAcceptedFixture": { "const": "../url-preflight/fixtures/preflight.json" }
+      },
+      "additionalProperties": false
+    },
+    "preflightHandoff": {
+      "type": "object",
+      "required": ["acceptedCase", "requiredStatus", "jobCreated", "captionPipelineStartsBeforeQueue", "translationCallsBeforeQueue"],
+      "properties": {
+        "acceptedCase": { "type": "string", "minLength": 1 },
+        "requiredStatus": { "const": "queued" },
+        "jobCreated": { "const": true },
+        "captionPipelineStartsBeforeQueue": { "const": 0 },
+        "translationCallsBeforeQueue": { "const": 0 }
+      },
+      "additionalProperties": false
+    },
+    "stateMachine": {
+      "type": "object",
+      "required": ["statuses", "initial", "processing", "terminal", "transitions", "forbiddenStatuses", "sameJobRetryTransition", "cacheHitCreatesTransition"],
+      "properties": {
+        "statuses": { "type": "array", "items": { "enum": ["queued", "fetching_captions", "translating", "ready", "failed"] } },
+        "initial": { "const": "queued" },
+        "processing": { "type": "array", "items": { "enum": ["queued", "fetching_captions", "translating"] } },
+        "terminal": { "type": "array", "items": { "enum": ["ready", "failed"] } },
+        "transitions": {
+          "type": "object",
+          "required": ["queued", "fetching_captions", "translating", "ready", "failed"],
+          "properties": {
+            "queued": { "type": "array", "items": { "enum": ["fetching_captions", "failed"] } },
+            "fetching_captions": { "type": "array", "items": { "enum": ["translating", "failed"] } },
+            "translating": { "type": "array", "items": { "enum": ["ready", "failed"] } },
+            "ready": { "const": [] },
+            "failed": { "const": [] }
+          },
+          "additionalProperties": false
+        },
+        "forbiddenStatuses": { "const": ["transcribing"] },
+        "sameJobRetryTransition": { "const": false },
+        "cacheHitCreatesTransition": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "stateFields": {
+      "type": "object",
+      "required": ["processing", "ready", "failed"],
+      "properties": {
+        "processing": {
+          "type": "object",
+          "required": ["errorCode", "errorMessageKey", "retryable", "learningDataPath"],
+          "properties": {
+            "errorCode": { "const": null },
+            "errorMessageKey": { "const": null },
+            "retryable": { "const": false },
+            "learningDataPath": { "const": null }
+          },
+          "additionalProperties": false
+        },
+        "ready": {
+          "type": "object",
+          "required": ["errorCode", "errorMessageKey", "retryable", "learningDataPathRequired", "resultPersistedBeforeReady"],
+          "properties": {
+            "errorCode": { "const": null },
+            "errorMessageKey": { "const": null },
+            "retryable": { "const": false },
+            "learningDataPathRequired": { "const": true },
+            "resultPersistedBeforeReady": { "const": true }
+          },
+          "additionalProperties": false
+        },
+        "failed": {
+          "type": "object",
+          "required": ["errorCodeRequired", "errorMessageKeyRequired", "retryableRequired", "learningDataPath", "successCacheWritten"],
+          "properties": {
+            "errorCodeRequired": { "const": true },
+            "errorMessageKeyRequired": { "const": true },
+            "retryableRequired": { "const": true },
+            "learningDataPath": { "const": null },
+            "successCacheWritten": { "const": false }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "polling": {
+      "type": "object",
+      "required": ["transport", "intervalSeconds", "activeOnlyWhen", "backgroundAction", "foregroundAction", "leaveAction", "backendJobContinuesInBackground", "getIsReadOnly", "transportFailureMutatesJob", "terminalSnapshotStopsPolling"],
+      "properties": {
+        "transport": { "const": "HTTP_GET" },
+        "intervalSeconds": { "const": 3 },
+        "activeOnlyWhen": { "const": ["processing_view_active", "app_foreground", "job_nonterminal"] },
+        "backgroundAction": { "const": "stop_periodic_polling" },
+        "foregroundAction": { "const": "immediate_get_then_3s_cadence" },
+        "leaveAction": { "const": "stop_local_polling_only" },
+        "backendJobContinuesInBackground": { "const": true },
+        "getIsReadOnly": { "const": true },
+        "transportFailureMutatesJob": { "const": false },
+        "terminalSnapshotStopsPolling": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "required": ["dedupeKeyFields", "idempotencyResultMinimumHours", "unknownDeliveryUsesSameKeyAndBody", "explicitRetryUsesNewKey", "activeOwnerMaximum", "failedJobIsSuccessCache", "retryOutcomes", "updatedAt"],
+      "properties": {
+        "dedupeKeyFields": { "const": ["videoId", "sourceLanguage", "targetLanguage", "pipelineVersion"] },
+        "idempotencyResultMinimumHours": { "type": "number", "minimum": 24 },
+        "unknownDeliveryUsesSameKeyAndBody": { "const": true },
+        "explicitRetryUsesNewKey": { "const": true },
+        "activeOwnerMaximum": { "const": 1 },
+        "failedJobIsSuccessCache": { "const": false },
+        "retryOutcomes": { "const": ["new_job", "reused_newer_owner"] },
+        "updatedAt": {
+          "type": "object",
+          "required": ["format", "normalChain", "olderSnapshotAction", "equalTimestampConflictingPayloadAction"],
+          "properties": {
+            "format": { "const": "RFC3339_TIMEZONE_REQUIRED" },
+            "normalChain": { "const": "strictly_increasing" },
+            "olderSnapshotAction": { "const": "ignore_stale" },
+            "equalTimestampConflictingPayloadAction": { "const": "log_invariant_violation_and_ignore" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "completion": {
+      "type": "object",
+      "required": ["wireSchema", "referenceField", "transcriptSource", "sourceLanguage", "targetLanguage", "wordsRequired", "emptyWordsAllowed", "emptyWordsBehavior"],
+      "properties": {
+        "wireSchema": { "const": "LearningDocument" },
+        "referenceField": { "const": "learningDataPath" },
+        "transcriptSource": { "const": "caption" },
+        "sourceLanguage": { "const": "en" },
+        "targetLanguage": { "const": "zh-Hant-TW" },
+        "wordsRequired": { "const": true },
+        "emptyWordsAllowed": { "const": true },
+        "emptyWordsBehavior": {
+          "type": "object",
+          "required": ["documentAccepted", "sentenceSeekEnabled", "wordHighlightEnabled"],
+          "properties": {
+            "documentAccepted": { "const": true },
+            "sentenceSeekEnabled": { "const": true },
+            "wordHighlightEnabled": { "const": false }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "releaseAEffects": {
+      "type": "object",
+      "required": ["audioDownloads", "sttCalls", "pollJobCreates", "pollCaptionPipelineStarts", "pollTranslationCalls", "backgroundJobMutations"],
+      "properties": {
+        "audioDownloads": { "const": 0 },
+        "sttCalls": { "const": 0 },
+        "pollJobCreates": { "const": 0 },
+        "pollCaptionPipelineStarts": { "const": 0 },
+        "pollTranslationCalls": { "const": 0 },
+        "backgroundJobMutations": { "const": 0 }
+      },
+      "additionalProperties": false
+    },
+    "openDecisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "state", "decision"],
+        "properties": {
+          "id": { "enum": ["D2-A", "D3-A", "D5-A", "SG-02", "SG-03"] },
+          "state": { "const": "OPEN" },
+          "decision": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "notRun": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "API_SERVER_RUNTIME",
+          "QUEUE_WORKER_AND_STORE",
+          "IOS_POLLING_AND_LIFECYCLE",
+          "CAPTION_AND_LLM_PROVIDERS",
+          "CONCURRENCY_AND_LOAD",
+          "LATENCY_SUCCESS_RATE_AND_COST",
+          "CACHE_PURGE_AND_RETENTION",
+          "BUILD_DEPLOYMENT_AND_TESTFLIGHT"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

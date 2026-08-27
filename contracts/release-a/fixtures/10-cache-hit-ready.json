@@ -1,0 +1,38 @@
+{
+  "case": "ready_dedupe_cache_hit",
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "66666666-6666-4666-8666-666666666666" },
+    "body": {
+      "url": "https://youtu.be/abcdefghijk?si=tracking",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-001",
+      "videoId": "abcdefghijk",
+      "title": "Release A fixture",
+      "duration": 120.5,
+      "status": "ready",
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": "/v1/videos/abcdefghijk/learning-data?target=zh-Hant-TW",
+      "updatedAt": "2026-08-25T06:00:09Z"
+    }
+  },
+  "expectedEffects": {
+    "jobCreated": false,
+    "reusedJobId": "job-release-a-001",
+    "cacheHitEventRecorded": true,
+    "captionCalls": 0,
+    "translationCalls": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "snapshot_ordering",
+  "cases": [
+    {
+      "case": "older_and_equal_conflicting_snapshots_do_not_overwrite",
+      "acceptedSnapshot": {
+        "jobId": "job-ordering-001",
+        "videoId": "Ordering001",
+        "title": "Ordering fixture",
+        "duration": 100,
+        "status": "translating",
+        "errorCode": null,
+        "errorMessageKey": null,
+        "retryable": false,
+        "learningDataPath": null,
+        "updatedAt": "2026-08-26T05:00:10Z"
+      },
+      "arrivals": [
+        {
+          "snapshot": {
+            "jobId": "job-ordering-001",
+            "videoId": "Ordering001",
+            "title": "Ordering fixture",
+            "duration": 100,
+            "status": "fetching_captions",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": null,
+            "updatedAt": "2026-08-26T05:00:05Z"
+          },
+          "expectedAction": "ignore_stale",
+          "visibleStatusAfter": "translating"
+        },
+        {
+          "snapshot": {
+            "jobId": "job-ordering-001",
+            "videoId": "Ordering001",
+            "title": "Conflicting payload",
+            "duration": 100,
+            "status": "translating",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": null,
+            "updatedAt": "2026-08-26T05:00:10Z"
+          },
+          "expectedAction": "log_invariant_violation_and_ignore",
+          "visibleStatusAfter": "translating"
+        },
+        {
+          "snapshot": {
+            "jobId": "job-ordering-001",
+            "videoId": "Ordering001",
+            "title": "Ordering fixture",
+            "duration": 100,
+            "status": "ready",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": "/v1/videos/Ordering001/learning-data?target=zh-Hant-TW",
+            "updatedAt": "2026-08-26T05:00:20Z"
+          },
+          "expectedAction": "accept_newer",
+          "visibleStatusAfter": "ready"
+        }
+      ],
+      "expectedEffects": { "postRequestsDelta": 0, "jobCreatesDelta": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+    }
+  ]
+}

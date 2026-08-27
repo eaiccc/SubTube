@@ -1,0 +1,29 @@
+{
+  "case": "unsupported_video_too_long",
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "cccccccc-cccc-4ccc-8ccc-cccccccccccc" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=toolong0001",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 422,
+    "headers": {},
+    "bodySchema": "APIError",
+    "body": {
+      "errorCode": "video_too_long",
+      "errorMessageKey": "parse.error.videoTooLong",
+      "retryable": false
+    }
+  },
+  "expectedEffects": {
+    "jobCreated": false,
+    "captionPipelineStarts": 0,
+    "translationCalls": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

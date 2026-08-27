@@ -1,0 +1,161 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "preflight",
+  "cases": [
+    {
+      "case": "public_captioned_english_900_seconds_is_accepted",
+      "input": {
+        "url": "https://youtu.be/Boundary900?si=tracking",
+        "facts": {
+          "visibility": "public",
+          "isLive": false,
+          "embeddable": true,
+          "durationSeconds": 900,
+          "sourceLanguage": "en",
+          "captions": { "available": true, "parseable": true, "language": "en" }
+        }
+      },
+      "expected": {
+        "accepted": true,
+        "response": {
+          "status": 202,
+          "bodySchema": "ProcessingJob",
+          "body": {
+            "jobId": "job-url-preflight-001",
+            "videoId": "Boundary900",
+            "title": "Boundary fixture",
+            "duration": 900,
+            "status": "queued",
+            "errorCode": null,
+            "errorMessageKey": null,
+            "retryable": false,
+            "learningDataPath": null,
+            "updatedAt": "2026-08-26T02:00:00Z"
+          }
+        }
+      },
+      "expectedEffects": {
+        "jobCreated": true,
+        "jobIdReturned": true,
+        "sourceMetadataCalls": 1,
+        "captionAvailabilityCalls": 1,
+        "captionPipelineStarts": 0,
+        "translationCalls": 0,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      }
+    },
+    {
+      "case": "private_video_is_rejected",
+      "input": {
+        "url": "https://www.youtube.com/watch?v=Private0001",
+        "facts": {
+          "visibility": "private",
+          "isLive": false,
+          "embeddable": true,
+          "durationSeconds": 120,
+          "sourceLanguage": "en",
+          "captions": { "available": true, "parseable": true, "language": "en" }
+        }
+      },
+      "expected": { "accepted": false, "response": { "status": 422, "bodySchema": "APIError", "body": { "errorCode": "video_private", "errorMessageKey": "parse.error.privateVideo", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 1, "captionAvailabilityCalls": 0, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "live_video_is_rejected",
+      "input": {
+        "url": "https://youtu.be/LiveVideo01",
+        "facts": {
+          "visibility": "public",
+          "isLive": true,
+          "embeddable": true,
+          "durationSeconds": 120,
+          "sourceLanguage": "en",
+          "captions": { "available": true, "parseable": true, "language": "en" }
+        }
+      },
+      "expected": { "accepted": false, "response": { "status": 422, "bodySchema": "APIError", "body": { "errorCode": "video_live", "errorMessageKey": "parse.error.liveVideo", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 1, "captionAvailabilityCalls": 0, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "not_embeddable_video_is_rejected",
+      "input": {
+        "url": "https://youtu.be/NoEmbed0001",
+        "facts": {
+          "visibility": "public",
+          "isLive": false,
+          "embeddable": false,
+          "durationSeconds": 120,
+          "sourceLanguage": "en",
+          "captions": { "available": true, "parseable": true, "language": "en" }
+        }
+      },
+      "expected": { "accepted": false, "response": { "status": 422, "bodySchema": "APIError", "body": { "errorCode": "video_not_embeddable", "errorMessageKey": "parse.error.notEmbeddable", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 1, "captionAvailabilityCalls": 0, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "video_over_900_seconds_is_rejected",
+      "input": {
+        "url": "https://www.youtube.com/watch?v=Over9000001",
+        "facts": {
+          "visibility": "public",
+          "isLive": false,
+          "embeddable": true,
+          "durationSeconds": 900.001,
+          "sourceLanguage": "en",
+          "captions": { "available": true, "parseable": true, "language": "en" }
+        }
+      },
+      "expected": { "accepted": false, "response": { "status": 422, "bodySchema": "APIError", "body": { "errorCode": "video_too_long", "errorMessageKey": "parse.error.videoTooLong", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 1, "captionAvailabilityCalls": 0, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "non_english_video_is_rejected",
+      "input": {
+        "url": "https://www.youtube.com/watch?v=NonEnglish1",
+        "facts": {
+          "visibility": "public",
+          "isLive": false,
+          "embeddable": true,
+          "durationSeconds": 120,
+          "sourceLanguage": "ja",
+          "captions": { "available": true, "parseable": true, "language": "ja" }
+        }
+      },
+      "expected": { "accepted": false, "response": { "status": 422, "bodySchema": "APIError", "body": { "errorCode": "non_english", "errorMessageKey": "parse.error.nonEnglish", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 1, "captionAvailabilityCalls": 0, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "captions_unavailable_is_release_a_4xx",
+      "input": {
+        "url": "https://youtu.be/NoCaption01",
+        "facts": {
+          "visibility": "public",
+          "isLive": false,
+          "embeddable": true,
+          "durationSeconds": 120,
+          "sourceLanguage": "en",
+          "captions": { "available": false, "parseable": false, "language": null }
+        }
+      },
+      "expected": { "accepted": false, "response": { "status": 422, "bodySchema": "APIError", "body": { "errorCode": "captions_unavailable", "errorMessageKey": "parse.error.captionsUnavailable", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 1, "captionAvailabilityCalls": 1, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "unparseable_english_captions_are_unavailable",
+      "input": {
+        "url": "https://youtu.be/BadCaption1",
+        "facts": {
+          "visibility": "public",
+          "isLive": false,
+          "embeddable": true,
+          "durationSeconds": 120,
+          "sourceLanguage": "en",
+          "captions": { "available": true, "parseable": false, "language": "en" }
+        }
+      },
+      "expected": { "accepted": false, "response": { "status": 422, "bodySchema": "APIError", "body": { "errorCode": "captions_unavailable", "errorMessageKey": "parse.error.captionsUnavailable", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 1, "captionAvailabilityCalls": 1, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    }
+  ]
+}

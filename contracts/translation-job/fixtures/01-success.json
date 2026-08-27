@@ -1,0 +1,139 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "success",
+  "cases": [
+    {
+      "case": "valid_first_attempt_produces_ready_learning_document",
+      "videoId": "Boundary900",
+      "input": {
+        "sourceLanguage": "en",
+        "targetLanguage": "zh-Hant-TW",
+        "transcriptSource": "caption",
+        "pipelineVersion": "release-a-caption-v1",
+        "segments": [
+          { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson." },
+          { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin." }
+        ]
+      },
+      "attempts": [
+        {
+          "outcome": "response",
+          "body": {
+            "sourceLanguage": "en",
+            "targetLanguage": "zh-Hant-TW",
+            "transcriptSource": "caption",
+            "pipelineVersion": "release-a-caption-v1",
+            "segments": [
+              { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "translation": "歡迎來到這堂課。" },
+              { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "translation": "我們開始吧。" }
+            ]
+          }
+        }
+      ],
+      "cacheProbe": null,
+      "expected": {
+        "job": {
+          "jobId": "job-translation-001",
+          "videoId": "Boundary900",
+          "title": "Translation fixture",
+          "duration": 900,
+          "status": "ready",
+          "errorCode": null,
+          "errorMessageKey": null,
+          "retryable": false,
+          "learningDataPath": "/v1/videos/Boundary900/learning-data?target=zh-Hant-TW",
+          "updatedAt": "2026-08-27T12:30:01Z"
+        },
+        "learningDocument": {
+          "videoId": "Boundary900",
+          "sourceLanguage": "en",
+          "targetLanguage": "zh-Hant-TW",
+          "pipelineVersion": "release-a-caption-v1",
+          "transcriptSource": "caption",
+          "segments": [
+            { "id": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson.", "translatedText": "歡迎來到這堂課。", "words": [] },
+            { "id": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin.", "translatedText": "我們開始吧。", "words": [] }
+          ]
+        },
+        "effects": {
+          "translationCallsTotal": 1,
+          "automaticRetriesUsed": 0,
+          "successfulCacheWritten": true,
+          "readyResultPersisted": true,
+          "cacheHit": false,
+          "legacyCacheReused": false,
+          "audioDownloads": 0,
+          "sttCalls": 0,
+          "statusTrace": ["translating", "ready"]
+        }
+      }
+    },
+    {
+      "case": "first_malformed_json_retries_once_then_ready",
+      "videoId": "RetryJson01",
+      "input": {
+        "sourceLanguage": "en",
+        "targetLanguage": "zh-Hant-TW",
+        "transcriptSource": "caption",
+        "pipelineVersion": "release-a-caption-v1",
+        "segments": [
+          { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson." },
+          { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin." }
+        ]
+      },
+      "attempts": [
+        { "outcome": "malformed_json", "bodyText": "{\"segments\":[" },
+        {
+          "outcome": "response",
+          "body": {
+            "sourceLanguage": "en",
+            "targetLanguage": "zh-Hant-TW",
+            "transcriptSource": "caption",
+            "pipelineVersion": "release-a-caption-v1",
+            "segments": [
+              { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "translation": "歡迎來到這堂課。" },
+              { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "translation": "我們開始吧。" }
+            ]
+          }
+        }
+      ],
+      "cacheProbe": null,
+      "expected": {
+        "job": {
+          "jobId": "job-translation-002",
+          "videoId": "RetryJson01",
+          "title": "Malformed then valid fixture",
+          "duration": 5,
+          "status": "ready",
+          "errorCode": null,
+          "errorMessageKey": null,
+          "retryable": false,
+          "learningDataPath": "/v1/videos/RetryJson01/learning-data?target=zh-Hant-TW",
+          "updatedAt": "2026-08-27T12:31:02Z"
+        },
+        "learningDocument": {
+          "videoId": "RetryJson01",
+          "sourceLanguage": "en",
+          "targetLanguage": "zh-Hant-TW",
+          "pipelineVersion": "release-a-caption-v1",
+          "transcriptSource": "caption",
+          "segments": [
+            { "id": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson.", "translatedText": "歡迎來到這堂課。", "words": [] },
+            { "id": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin.", "translatedText": "我們開始吧。", "words": [] }
+          ]
+        },
+        "effects": {
+          "translationCallsTotal": 2,
+          "automaticRetriesUsed": 1,
+          "successfulCacheWritten": true,
+          "readyResultPersisted": true,
+          "cacheHit": false,
+          "legacyCacheReused": false,
+          "audioDownloads": 0,
+          "sttCalls": 0,
+          "statusTrace": ["translating", "ready"]
+        }
+      }
+    }
+  ]
+}

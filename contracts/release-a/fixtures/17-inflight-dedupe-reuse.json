@@ -1,0 +1,69 @@
+{
+  "case": "different_key_same_dedupe_inflight_convergence",
+  "ownerRequest": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "dddddddd-dddd-4ddd-8ddd-dddddddddddd" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=dedupe00001",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "ownerResponse": {
+    "status": 202,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-005",
+      "videoId": "dedupe00001",
+      "title": "In-flight owner fixture",
+      "duration": 72.0,
+      "status": "queued",
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": null,
+      "updatedAt": "2026-08-25T06:30:00Z"
+    }
+  },
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee" },
+    "body": {
+      "url": "https://youtu.be/dedupe00001?si=tracking",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 202,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-005",
+      "videoId": "dedupe00001",
+      "title": "In-flight owner fixture",
+      "duration": 72.0,
+      "status": "fetching_captions",
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": null,
+      "updatedAt": "2026-08-25T06:30:03Z"
+    }
+  },
+  "expectedEffects": {
+    "ownerDedupeKey": "dedupe00001|en|zh-Hant-TW|release-a-caption-v1",
+    "requestDedupeKey": "dedupe00001|en|zh-Hant-TW|release-a-caption-v1",
+    "ownerJobCreated": true,
+    "jobCreated": false,
+    "reusedInFlightOwner": true,
+    "reusedJobId": "job-release-a-005",
+    "activeOwnerCount": 1,
+    "captionPipelineStartsTotal": 1,
+    "translationCallsTotal": 0,
+    "audioDownloadsTotal": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

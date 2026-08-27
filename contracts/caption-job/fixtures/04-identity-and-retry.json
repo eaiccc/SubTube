@@ -1,0 +1,116 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "identity_and_retry",
+  "cases": [
+    {
+      "case": "unknown_delivery_exact_replay",
+      "firstRequest": {
+        "idempotencyKey": "11111111-aaaa-4aaa-8aaa-111111111111",
+        "body": { "url": "https://youtu.be/ReplayJob01", "targetLanguage": "zh-Hant-TW" }
+      },
+      "replayRequest": {
+        "idempotencyKey": "11111111-aaaa-4aaa-8aaa-111111111111",
+        "body": { "url": "https://youtu.be/ReplayJob01", "targetLanguage": "zh-Hant-TW" }
+      },
+      "firstResponse": {
+        "status": 202,
+        "body": {
+          "jobId": "job-replay-001",
+          "videoId": "ReplayJob01",
+          "title": "Replay fixture",
+          "duration": 50,
+          "status": "queued",
+          "errorCode": null,
+          "errorMessageKey": null,
+          "retryable": false,
+          "learningDataPath": null,
+          "updatedAt": "2026-08-26T04:00:00Z"
+        }
+      },
+      "replayResponse": {
+        "status": 202,
+        "body": {
+          "jobId": "job-replay-001",
+          "videoId": "ReplayJob01",
+          "title": "Replay fixture",
+          "duration": 50,
+          "status": "queued",
+          "errorCode": null,
+          "errorMessageKey": null,
+          "retryable": false,
+          "learningDataPath": null,
+          "updatedAt": "2026-08-26T04:00:00Z"
+        }
+      },
+      "expectedEffects": { "jobCreatesTotal": 1, "activeOwnerCount": 1, "captionPipelineStartsTotal": 0, "translationCallsTotal": 0, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    },
+    {
+      "case": "different_keys_converge_on_inflight_owner",
+      "dedupeKey": "OwnerJob001|en|zh-Hant-TW|release-a-caption-v1",
+      "ownerRequest": {
+        "idempotencyKey": "22222222-aaaa-4aaa-8aaa-222222222222",
+        "body": { "url": "https://www.youtube.com/watch?v=OwnerJob001", "targetLanguage": "zh-Hant-TW" }
+      },
+      "convergingRequest": {
+        "idempotencyKey": "33333333-aaaa-4aaa-8aaa-333333333333",
+        "body": { "url": "https://youtu.be/OwnerJob001?si=tracking", "targetLanguage": "zh-Hant-TW" }
+      },
+      "ownerJobId": "job-owner-001",
+      "returnedJobIds": ["job-owner-001", "job-owner-001"],
+      "expectedEffects": { "jobCreatesTotal": 1, "activeOwnerCount": 1, "captionPipelineStartsTotal": 1, "translationCallsTotal": 0, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    },
+    {
+      "case": "retryable_failure_creates_one_new_owner",
+      "priorFailedJob": {
+        "jobId": "job-failed-001",
+        "videoId": "RetryJob001",
+        "title": "Retry owner fixture",
+        "duration": 65,
+        "status": "failed",
+        "errorCode": "caption_fetch_failed",
+        "errorMessageKey": "parse.error.captionFetchFailed",
+        "retryable": true,
+        "learningDataPath": null,
+        "updatedAt": "2026-08-26T04:10:00Z"
+      },
+      "priorRequest": {
+        "idempotencyKey": "44444444-aaaa-4aaa-8aaa-444444444444",
+        "body": { "url": "https://youtu.be/RetryJob001", "targetLanguage": "zh-Hant-TW" }
+      },
+      "retryRequest": {
+        "idempotencyKey": "55555555-aaaa-4aaa-8aaa-555555555555",
+        "body": { "url": "https://youtu.be/RetryJob001", "targetLanguage": "zh-Hant-TW" }
+      },
+      "outcome": "new_job",
+      "returnedJobId": "job-retry-owner-002",
+      "expectedEffects": { "priorFailedJobReused": false, "newerOwnerCreatesTotal": 1, "newerActiveOwnerCount": 1, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    },
+    {
+      "case": "concurrent_retry_reuses_newer_owner",
+      "priorFailedJobId": "job-failed-001",
+      "priorRequest": {
+        "idempotencyKey": "44444444-aaaa-4aaa-8aaa-444444444444",
+        "body": { "url": "https://youtu.be/RetryJob001", "targetLanguage": "zh-Hant-TW" }
+      },
+      "retryRequest": {
+        "idempotencyKey": "77777777-aaaa-4aaa-8aaa-777777777777",
+        "body": { "url": "https://youtu.be/RetryJob001", "targetLanguage": "zh-Hant-TW" }
+      },
+      "outcome": "reused_newer_owner",
+      "returnedJobId": "job-retry-owner-002",
+      "expectedEffects": { "priorFailedJobReused": false, "newerOwnerCreatesTotal": 0, "newerActiveOwnerCount": 1, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    },
+    {
+      "case": "ready_dedupe_converges_without_provider_work",
+      "requestKey": "66666666-aaaa-4aaa-8aaa-666666666666",
+      "request": {
+        "idempotencyKey": "66666666-aaaa-4aaa-8aaa-666666666666",
+        "body": { "url": "https://youtu.be/Boundary900?si=tracking", "targetLanguage": "zh-Hant-TW" }
+      },
+      "dedupeKey": "Boundary900|en|zh-Hant-TW|release-a-caption-v1",
+      "returnedJobId": "job-url-preflight-001",
+      "returnedStatus": "ready",
+      "expectedEffects": { "jobCreatesDelta": 0, "activeOwnerCount": 0, "captionPipelineStartsDelta": 0, "translationCallsDelta": 0, "audioDownloadsDelta": 0, "sttCallsDelta": 0 }
+    }
+  ]
+}

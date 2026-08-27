@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://subtube.example.invalid/contracts/url-preflight/fixtures.schema.json",
+  "title": "SubTube URL normalization and preflight fixture collection",
+  "type": "object",
+  "required": ["contractVersion", "kind", "cases"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "kind": {
+      "type": "string",
+      "enum": ["normalization", "preflight", "handoff", "provider_entry_guard"]
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["case", "input", "expected", "expectedEffects"],
+        "properties": {
+          "case": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "input": { "type": "object" },
+          "expected": { "type": "object" },
+          "expectedEffects": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

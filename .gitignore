@@ -1,0 +1,8 @@
+# Local dispatch events and ledgers; keep reusable templates under docs/dev.
+/progress/
+
+# Local/generated files.
+.DS_Store
+.codebase-memory/
+**/__pycache__/
+*.py[cod]

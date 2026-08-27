@@ -1,0 +1,241 @@
+{
+  "$schema": "../schemas/decision-ledger.schema.json",
+  "schemaVersion": "1.0.0",
+  "issue": 1705,
+  "asOf": "2026-08-27",
+  "timezone": "Asia/Taipei",
+  "releaseAOverall": "blocked_no_go",
+  "releaseBOverall": "open_no_go",
+  "decisions": [
+    {
+      "id": "D1",
+      "status": "open_no_go",
+      "decision": "Release B has no approved method to obtain audio from captionless third-party YouTube videos. Release A must not download audio or enter STT.",
+      "owner": ["Product Owner", "Named legal counsel (OPEN)"],
+      "deadline": "2026-09-30T17:00:00+08:00",
+      "deadlineRule": "Before M3 starts, whichever is earlier",
+      "evidence": [
+        "PRD.md:55-62",
+        "PRD.md:367-375",
+        "PRD.md:526-539",
+        "https://developers.google.com/youtube/terms/api-services-terms-of-service"
+      ],
+      "releaseImpact": "Blocks Release B only; requires Release A STT/audio counters to remain zero.",
+      "unblockConditions": [
+        "A named legal owner signs a dated policy memo for one non-circumventing audio acquisition path.",
+        "The memo states allowed videos, retention, deletion, geography and audit requirements.",
+        "D2-B and D3-B independently pass after D1; D1 alone does not enable STT."
+      ]
+    },
+    {
+      "id": "D2",
+      "status": "blocked_no_go",
+      "decision": "D2-A freezes YouTube Data API v3 videos.list for metadata preflight and OpenAI gpt-5.4-mini-2026-03-17 for translation, but no approved caption-text provider exists for arbitrary public videos. The official captions.download method requires permission to edit the video. Release A provider execution remains NO-GO. D2-B STT remains OPEN/NO-GO.",
+      "owner": ["Product Owner", "codex-uhura-pro", "codex-r2d2-pro"],
+      "deadline": "2026-09-05T17:00:00+08:00",
+      "deadlineRule": "Before M1 provider implementation starts",
+      "evidence": [
+        "PRD.md:376-382",
+        "PRD.md:526-539",
+        "https://developers.google.com/youtube/v3/docs/videos",
+        "https://developers.google.com/youtube/v3/docs/captions/list",
+        "https://developers.google.com/youtube/v3/docs/captions/download",
+        "https://developers.google.com/youtube/v3/determine_quota_cost",
+        "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
+      ],
+      "releaseImpact": "Blocks Release A M1 real-provider path and all Release B STT work; does not block caption-only synthetic contract fixtures.",
+      "unblockConditions": [
+        "PO and legal approve one documented caption-text source for non-owner public videos without scraping, IP rotation or source-control bypass.",
+        "Uhura records a successful authorized caption retrieval against at least one corpus video and a denied-path test without audio/STT fallback.",
+        "R2D2 demonstrates provider metering rejects a job before spend exceeds USD 0.15.",
+        "Any provider/model/prompt/schema change bumps pipelineVersion and invalidates prior cache evidence."
+      ]
+    },
+    {
+      "id": "D3",
+      "status": "blocked_no_go",
+      "decision": "D3-A has a 20-video Release A candidate manifest, two assigned Traditional-Chinese review roles, a five-point rubric, a 4/5 acceptability threshold, deterministic sampling and replacement rules. Zero videos are promoted to verified because official preflight, caption-text retrieval and staging do not exist. D3-B STT corpus remains OPEN and separate.",
+      "owner": ["Product Owner", "codex-hermione-pro"],
+      "deadline": "2026-09-08T17:00:00+08:00",
+      "deadlineRule": "Before Release A quality/latency claims or M1 gate pass",
+      "evidence": [
+        "PRD.md:350-365",
+        "PRD.md:526-539",
+        "contracts/release-a-gates/fixtures/release-a-corpus.json",
+        "contracts/release-a-gates/verify_gates.py"
+      ],
+      "releaseImpact": "Blocks Release A quality, latency and success-rate claims; blocks Release B independently through D3-B.",
+      "unblockConditions": [
+        "All 20 candidates pass official preflight within 24 hours of the test run.",
+        "The approved caption provider retrieves usable English sentence timing for all 20 without audio or STT.",
+        "The named Release A staging environment exists and records the frozen provider/model/pipeline fingerprint.",
+        "Both reviewers independently score 10 deterministic segments per video and at least 90% of all 400 ratings are 4 or 5."
+      ]
+    },
+    {
+      "id": "D4",
+      "status": "decided_runtime_not_run",
+      "decision": "Freeze the PRD initial anonymous quota at 5 parse requests per installation per rolling 24 hours, 20 per IP per rolling 24 hours and one in-flight job per installation.",
+      "owner": ["Product Owner", "codex-r2d2-pro"],
+      "deadline": "2026-09-30T17:00:00+08:00",
+      "deadlineRule": "Before M2 release candidate",
+      "evidence": ["PRD.md:376-382", "PRD.md:437-441", "PRD.md:526-539"],
+      "releaseImpact": "Product value is frozen for Release A; runtime enforcement and abuse evidence remain NOT RUN and block M2 launch.",
+      "unblockConditions": [
+        "R2D2 provides clock-controlled quota, Retry-After and zero-downstream-call evidence.",
+        "PO reviews real abuse/cost data before changing the frozen values."
+      ]
+    },
+    {
+      "id": "D5",
+      "status": "open_no_go",
+      "decision": "Raw audio deletion within 24 hours and successful LearningDocument cache retention for 7 days are frozen values, but no store, purge job, deletion log or runtime proof exists.",
+      "owner": ["codex-uhura-pro", "codex-r2d2-pro"],
+      "deadline": "2026-09-30T17:00:00+08:00",
+      "deadlineRule": "Before M2 release candidate",
+      "evidence": [
+        "PRD.md:367-375",
+        "PRD.md:526-539",
+        "docs/contracts/release-a-contract.md:43-45",
+        "docs/contracts/release-a-contract.md:291-301"
+      ],
+      "releaseImpact": "Blocks Release A M2 launch evidence, not contract readback; raw audio remains unreachable while D1/D2-B are NO-GO.",
+      "unblockConditions": [
+        "Backend store and daily purge job exist.",
+        "Clock-controlled tests and deletion logs prove both TTLs without content logging.",
+        "QA independently reruns purge and expiry probes."
+      ]
+    },
+    {
+      "id": "D6",
+      "status": "decided",
+      "decision": "The 15-minute limit applies to the first Release A and Release B corpora. Every current Release A candidate has a YouTube-page-observed duration at or below 646 seconds; any failing or longer replacement is rejected rather than widening the limit.",
+      "owner": ["Product Owner"],
+      "deadline": "2026-08-27T23:59:59+08:00",
+      "deadlineRule": "Before M1 starts",
+      "evidence": [
+        "PRD.md:76-84",
+        "PRD.md:350-365",
+        "PRD.md:526-539",
+        "contracts/release-a-gates/fixtures/release-a-corpus.json",
+        "contracts/release-a-gates/verify_gates.py"
+      ],
+      "releaseImpact": "PASS for the product boundary and observed candidate durations; official videos.list recheck is still required by D3-A before quality execution.",
+      "unblockConditions": []
+    }
+  ],
+  "releaseAConfig": {
+    "activationStatus": "blocked_no_go",
+    "pipelineVersion": "release-a-caption-v1",
+    "pipelineVersionActivationRule": "Reserved and immutable for this decision package, but MUST NOT be deployed until captionTextProvider.status is approved. A provider, model snapshot, prompt, schema or segmentation change requires a new version.",
+    "caption": {
+      "source": "English creator-provided or YouTube automatic captions on a supported public video",
+      "metadataProvider": "YouTube Data API v3 videos.list",
+      "metadataFields": [
+        "snippet.liveBroadcastContent",
+        "snippet.defaultAudioLanguage",
+        "contentDetails.duration",
+        "contentDetails.caption",
+        "status.privacyStatus",
+        "status.embeddable"
+      ],
+      "captionTextProvider": {
+        "status": "blocked",
+        "provider": null,
+        "reason": "YouTube Data API v3 captions.download requires permission to edit the video, so it is not an approved arbitrary-public-video caption provider."
+      }
+    },
+    "translation": {
+      "provider": "OpenAI API",
+      "endpoint": "Responses API",
+      "modelAlias": "gpt-5.4-mini",
+      "modelSnapshot": "gpt-5.4-mini-2026-03-17",
+      "reasoningEffort": "none",
+      "structuredOutputs": true,
+      "targetLanguage": "zh-Hant-TW",
+      "maxAutomaticRetries": 1,
+      "aggregateTokenBudgetPerAttempt": {
+        "input": 12000,
+        "output": 12000
+      },
+      "priceUsdPerMillionTokens": {
+        "input": 0.75,
+        "output": 4.5,
+        "regionalProcessingUpliftMaximum": 0.1,
+        "accessedAt": "2026-08-27",
+        "source": "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
+      }
+    },
+    "timeoutsMs": {
+      "preflightHard": 2000,
+      "captionFetchStep": 15000,
+      "llmAttempt": 20000,
+      "jobHardFromCreatedToTerminal": 60000
+    },
+    "providerCost": {
+      "scope": "Direct per-task provider usage only; excludes fixed infrastructure. YouTube quota units are reported separately and are not assigned an invented USD value.",
+      "llmWorstCaseFormula": "2 attempts * ((12000 input / 1000000 * USD 0.75) + (12000 output / 1000000 * USD 4.50)) * 1.10 maximum documented regional uplift",
+      "llmBaseWorstCaseUsd": 0.126,
+      "llmWorstCaseUsd": 0.1386,
+      "hardCapUsd": 0.15,
+      "remainingCaptionProviderAllowanceUsd": 0.0114,
+      "enforcement": "Reject before a provider call that could make estimated direct provider spend exceed the hard cap; return non-retryable cost_limit_exceeded. Runtime metering is NOT RUN."
+    },
+    "youtubeQuota": {
+      "videosListUnitsPerCall": 1,
+      "captionsListUnitsPerCall": 50,
+      "captionsDownloadUnitsPerCall": 200,
+      "source": "https://developers.google.com/youtube/v3/determine_quota_cost",
+      "limitation": "Quota values do not establish caption download authorization or a USD cost."
+    },
+    "releaseARedLines": {
+      "audioDownloadsAllowed": false,
+      "sttEnabled": false,
+      "allowedPublicStatuses": ["queued", "fetching_captions", "translating", "ready", "failed"],
+      "allowedTranscriptSources": ["caption"],
+      "captionUnavailableBehavior": "422 captions_unavailable; no job, audio, STT or LLM"
+    }
+  },
+  "releaseBDecisionCells": {
+    "D2-B": {
+      "status": "open_no_go",
+      "owner": ["Product Owner", "codex-uhura-pro", "codex-r2d2-pro"],
+      "deadline": "2026-09-30T17:00:00+08:00",
+      "evidence": [
+        "PRD.md:55-62",
+        "PRD.md:367-375",
+        "PRD.md:526-539",
+        "decision-ledger.json:D1-D2"
+      ],
+      "unblockConditions": [
+        "D1 has a dated legal decision for a compliant audio acquisition path.",
+        "One STT provider, model/version, timeout, cost ceiling, retention and deletion policy are separately approved.",
+        "A separate Release B implementation and corpus gate passes; this cell never enables Release A audio or STT."
+      ],
+      "releaseImpact": "Release B remains OPEN/NO-GO; no Release A audio, transcribing, STT or transcriptSource=stt path is enabled."
+    },
+    "D3-B": {
+      "status": "open_no_go",
+      "owner": ["Product Owner", "codex-hermione-pro"],
+      "deadline": "2026-09-30T17:00:00+08:00",
+      "evidence": [
+        "PRD.md:350-365",
+        "PRD.md:526-539",
+        "release-a-corpus.json:scope=release_a_caption_only"
+      ],
+      "unblockConditions": [
+        "Create and approve a separate captionless corpus and reviewer protocol after D1 and D2-B pass.",
+        "Prove the Release B corpus, audio retention, STT output and quality evidence in its own gate.",
+        "Keep the Release A 20-video caption-only denominator unchanged and never mix corpora."
+      ],
+      "releaseImpact": "Release B quality and launch remain OPEN/NO-GO; Release A D3-A stays caption-only with verifiedCount=0."
+    }
+  },
+  "evidenceStatus": {
+    "officialPolicyAndPriceReadback": "DOCUMENTED",
+    "captionProviderExecution": "NOT RUN",
+    "llmProviderExecution": "NOT RUN",
+    "runtimeCostMetering": "NOT RUN",
+    "sttProvider": "NOT SELECTED / NO-GO"
+  }
+}

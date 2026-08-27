@@ -1,0 +1,37 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "provider_entry_guard",
+  "cases": [
+    {
+      "case": "quota_exceeded_rejects_before_source_probe",
+      "input": { "quotaDecision": "deny", "url": "https://youtu.be/QuotaGuard1" },
+      "expected": { "response": { "status": 429, "headers": { "Retry-After": 3600 }, "bodySchema": "APIError", "body": { "errorCode": "quota_exceeded", "errorMessageKey": "parse.error.quotaExceeded", "retryable": false } } },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "sourceMetadataCalls": 0, "captionAvailabilityCalls": 0, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "cost_policy_denial_is_job_error_before_async_providers",
+      "input": { "existingJobId": "job-cost-guard-001", "costPolicyDecision": "deny", "thresholdEvidence": "NOT_RUN_D2" },
+      "expected": {
+        "response": {
+          "status": 200,
+          "bodySchema": "ProcessingJob",
+          "body": {
+            "jobId": "job-cost-guard-001",
+            "videoId": "CostGuard01",
+            "title": "Cost guard fixture",
+            "duration": 600,
+            "status": "failed",
+            "errorCode": "cost_limit_exceeded",
+            "errorMessageKey": "parse.error.costLimitExceeded",
+            "retryable": false,
+            "learningDataPath": null,
+            "updatedAt": "2026-08-26T02:10:00Z"
+          }
+        },
+        "preflight4xx": false,
+        "reason": "The frozen Release A contract classifies cost_limit_exceeded as a job error; this fixture does not define a #1727 transition."
+      },
+      "expectedEffects": { "existingJobRequired": true, "jobCreated": false, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    }
+  ]
+}

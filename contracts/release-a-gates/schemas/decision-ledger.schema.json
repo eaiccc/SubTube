@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://subtube.local/contracts/release-a-gates/decision-ledger.schema.json",
+  "title": "SubTube D1-D6 Decision Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "issue", "asOf", "timezone", "releaseAOverall", "releaseBOverall", "decisions", "releaseAConfig", "releaseBDecisionCells", "evidenceStatus"],
+  "properties": {
+    "$schema": {"const": "../schemas/decision-ledger.schema.json"},
+    "schemaVersion": {"const": "1.0.0"},
+    "issue": {"const": 1705},
+    "asOf": {"type": "string", "format": "date"},
+    "timezone": {"const": "Asia/Taipei"},
+    "releaseAOverall": {"enum": ["blocked_no_go", "ready_for_run"]},
+    "releaseBOverall": {"const": "open_no_go"},
+    "decisions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {"$ref": "#/$defs/decision"}
+    },
+    "releaseAConfig": {"$ref": "#/$defs/releaseAConfig"},
+    "releaseBDecisionCells": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["D2-B", "D3-B"],
+      "properties": {
+        "D2-B": {"$ref": "#/$defs/releaseBDecisionCell"},
+        "D3-B": {"$ref": "#/$defs/releaseBDecisionCell"}
+      }
+    },
+    "evidenceStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["officialPolicyAndPriceReadback", "captionProviderExecution", "llmProviderExecution", "runtimeCostMetering", "sttProvider"],
+      "properties": {
+        "officialPolicyAndPriceReadback": {"const": "DOCUMENTED"},
+        "captionProviderExecution": {"enum": ["NOT RUN", "PASS"]},
+        "llmProviderExecution": {"const": "NOT RUN"},
+        "runtimeCostMetering": {"const": "NOT RUN"},
+        "sttProvider": {"const": "NOT SELECTED / NO-GO"}
+      }
+    }
+  },
+  "$defs": {
+    "nonBlankString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "nonBlankStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/nonBlankString"}
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "decision", "owner", "deadline", "deadlineRule", "evidence", "releaseImpact", "unblockConditions"],
+      "properties": {
+        "id": {"enum": ["D1", "D2", "D3", "D4", "D5", "D6"]},
+        "status": {"enum": ["decided", "decided_runtime_not_run", "blocked_no_go", "open_no_go"]},
+        "decision": {"$ref": "#/$defs/nonBlankString"},
+        "owner": {"$ref": "#/$defs/nonBlankStringArray"},
+        "deadline": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
+        "deadlineRule": {"$ref": "#/$defs/nonBlankString"},
+        "evidence": {"$ref": "#/$defs/nonBlankStringArray"},
+        "releaseImpact": {"$ref": "#/$defs/nonBlankString"},
+        "unblockConditions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/nonBlankString"}
+        }
+      }
+    },
+    "releaseBDecisionCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "owner", "deadline", "evidence", "unblockConditions", "releaseImpact"],
+      "properties": {
+        "status": {"const": "open_no_go"},
+        "owner": {"$ref": "#/$defs/nonBlankStringArray"},
+        "deadline": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
+        "evidence": {"$ref": "#/$defs/nonBlankStringArray"},
+        "unblockConditions": {"$ref": "#/$defs/nonBlankStringArray"},
+        "releaseImpact": {"$ref": "#/$defs/nonBlankString"}
+      }
+    },
+    "releaseAConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["activationStatus", "pipelineVersion", "pipelineVersionActivationRule", "caption", "translation", "timeoutsMs", "providerCost", "youtubeQuota", "releaseARedLines"],
+      "properties": {
+        "activationStatus": {"enum": ["blocked_no_go", "ready_for_run"]},
+        "pipelineVersion": {"const": "release-a-caption-v1"},
+        "pipelineVersionActivationRule": {"$ref": "#/$defs/nonBlankString"},
+        "caption": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "metadataProvider", "metadataFields", "captionTextProvider"],
+          "properties": {
+            "source": {"$ref": "#/$defs/nonBlankString"},
+            "metadataProvider": {"const": "YouTube Data API v3 videos.list"},
+            "metadataFields": {"$ref": "#/$defs/nonBlankStringArray"},
+            "captionTextProvider": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["status", "provider", "reason"],
+              "properties": {
+                "status": {"enum": ["blocked", "approved"]},
+                "provider": {"type": ["string", "null"]},
+                "reason": {"$ref": "#/$defs/nonBlankString"},
+                "evidence": {"$ref": "#/$defs/nonBlankStringArray"}
+              }
+            }
+          }
+        },
+        "translation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "endpoint", "modelAlias", "modelSnapshot", "reasoningEffort", "structuredOutputs", "targetLanguage", "maxAutomaticRetries", "aggregateTokenBudgetPerAttempt", "priceUsdPerMillionTokens"],
+          "properties": {
+            "provider": {"const": "OpenAI API"},
+            "endpoint": {"const": "Responses API"},
+            "modelAlias": {"const": "gpt-5.4-mini"},
+            "modelSnapshot": {"const": "gpt-5.4-mini-2026-03-17"},
+            "reasoningEffort": {"const": "none"},
+            "structuredOutputs": {"const": true},
+            "targetLanguage": {"const": "zh-Hant-TW"},
+            "maxAutomaticRetries": {"const": 1},
+            "aggregateTokenBudgetPerAttempt": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["input", "output"],
+              "properties": {
+                "input": {"const": 12000},
+                "output": {"const": 12000}
+              }
+            },
+            "priceUsdPerMillionTokens": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["input", "output", "regionalProcessingUpliftMaximum", "accessedAt", "source"],
+              "properties": {
+                "input": {"const": 0.75},
+                "output": {"const": 4.5},
+                "regionalProcessingUpliftMaximum": {"const": 0.1},
+                "accessedAt": {"const": "2026-08-27", "type": "string", "format": "date"},
+                "source": {"const": "https://developers.openai.com/api/docs/models/gpt-5.4-mini", "type": "string", "format": "https-url"}
+              }
+            }
+          }
+        },
+        "timeoutsMs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["preflightHard", "captionFetchStep", "llmAttempt", "jobHardFromCreatedToTerminal"],
+          "properties": {
+            "preflightHard": {"const": 2000, "type": "integer", "minimum": 1},
+            "captionFetchStep": {"const": 15000, "type": "integer", "minimum": 1},
+            "llmAttempt": {"const": 20000, "type": "integer", "minimum": 1},
+            "jobHardFromCreatedToTerminal": {"const": 60000, "type": "integer", "minimum": 1}
+          }
+        },
+        "providerCost": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["scope", "llmWorstCaseFormula", "llmBaseWorstCaseUsd", "llmWorstCaseUsd", "hardCapUsd", "remainingCaptionProviderAllowanceUsd", "enforcement"],
+          "properties": {
+            "scope": {"$ref": "#/$defs/nonBlankString"},
+            "llmWorstCaseFormula": {"const": "2 attempts * ((12000 input / 1000000 * USD 0.75) + (12000 output / 1000000 * USD 4.50)) * 1.10 maximum documented regional uplift"},
+            "llmBaseWorstCaseUsd": {"const": 0.126, "type": "number", "minimum": 0},
+            "llmWorstCaseUsd": {"const": 0.1386, "type": "number", "minimum": 0},
+            "hardCapUsd": {"const": 0.15, "type": "number", "minimum": 0},
+            "remainingCaptionProviderAllowanceUsd": {"const": 0.0114, "type": "number", "minimum": 0},
+            "enforcement": {"$ref": "#/$defs/nonBlankString"}
+          }
+        },
+        "youtubeQuota": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["videosListUnitsPerCall", "captionsListUnitsPerCall", "captionsDownloadUnitsPerCall", "source", "limitation"],
+          "properties": {
+            "videosListUnitsPerCall": {"const": 1},
+            "captionsListUnitsPerCall": {"const": 50},
+            "captionsDownloadUnitsPerCall": {"const": 200},
+            "source": {"const": "https://developers.google.com/youtube/v3/determine_quota_cost", "type": "string", "format": "https-url"},
+            "limitation": {"$ref": "#/$defs/nonBlankString"}
+          }
+        },
+        "releaseARedLines": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["audioDownloadsAllowed", "sttEnabled", "allowedPublicStatuses", "allowedTranscriptSources", "captionUnavailableBehavior"],
+          "properties": {
+            "audioDownloadsAllowed": {"const": false},
+            "sttEnabled": {"const": false},
+            "allowedPublicStatuses": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 5,
+              "prefixItems": [
+                {"const": "queued"},
+                {"const": "fetching_captions"},
+                {"const": "translating"},
+                {"const": "ready"},
+                {"const": "failed"}
+              ]
+            },
+            "allowedTranscriptSources": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "prefixItems": [{"const": "caption"}]
+            },
+            "captionUnavailableBehavior": {"$ref": "#/$defs/nonBlankString"}
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "provider_failure",
+  "cases": [
+    {
+      "case": "provider_timeout_uses_existing_retryable_failure_semantics",
+      "videoId": "Timeout0001",
+      "input": {
+        "sourceLanguage": "en",
+        "targetLanguage": "zh-Hant-TW",
+        "transcriptSource": "caption",
+        "pipelineVersion": "release-a-caption-v1",
+        "segments": [
+          { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson." },
+          { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin." }
+        ]
+      },
+      "attempts": [
+        { "outcome": "provider_failure", "failure": "timeout" }
+      ],
+      "cacheProbe": null,
+      "expected": {
+        "job": {
+          "jobId": "job-translation-004",
+          "videoId": "Timeout0001",
+          "title": "Provider timeout fixture",
+          "duration": 5,
+          "status": "failed",
+          "errorCode": "translation_provider_failed",
+          "errorMessageKey": "parse.error.translationProviderFailed",
+          "retryable": true,
+          "learningDataPath": null,
+          "updatedAt": "2026-08-27T12:33:01Z"
+        },
+        "learningDocument": null,
+        "effects": {
+          "translationCallsTotal": 1,
+          "automaticRetriesUsed": 0,
+          "successfulCacheWritten": false,
+          "readyResultPersisted": false,
+          "cacheHit": false,
+          "legacyCacheReused": false,
+          "audioDownloads": 0,
+          "sttCalls": 0,
+          "statusTrace": ["translating", "failed"]
+        }
+      }
+    }
+  ]
+}

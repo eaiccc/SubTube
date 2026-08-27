@@ -1,0 +1,142 @@
+{
+  "$schema": "./schemas/lifecycle.schema.json",
+  "contractVersion": "1.0.0",
+  "issue": 1727,
+  "release": "A",
+  "dependencies": {
+    "wireContract": "../release-a/openapi.json",
+    "preflightPolicy": "../url-preflight/policy.json",
+    "preflightAcceptedFixture": "../url-preflight/fixtures/preflight.json"
+  },
+  "preflightHandoff": {
+    "acceptedCase": "public_captioned_english_900_seconds_is_accepted",
+    "requiredStatus": "queued",
+    "jobCreated": true,
+    "captionPipelineStartsBeforeQueue": 0,
+    "translationCallsBeforeQueue": 0
+  },
+  "stateMachine": {
+    "statuses": ["queued", "fetching_captions", "translating", "ready", "failed"],
+    "initial": "queued",
+    "processing": ["queued", "fetching_captions", "translating"],
+    "terminal": ["ready", "failed"],
+    "transitions": {
+      "queued": ["fetching_captions", "failed"],
+      "fetching_captions": ["translating", "failed"],
+      "translating": ["ready", "failed"],
+      "ready": [],
+      "failed": []
+    },
+    "forbiddenStatuses": ["transcribing"],
+    "sameJobRetryTransition": false,
+    "cacheHitCreatesTransition": false
+  },
+  "stateFields": {
+    "processing": {
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": null
+    },
+    "ready": {
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPathRequired": true,
+      "resultPersistedBeforeReady": true
+    },
+    "failed": {
+      "errorCodeRequired": true,
+      "errorMessageKeyRequired": true,
+      "retryableRequired": true,
+      "learningDataPath": null,
+      "successCacheWritten": false
+    }
+  },
+  "polling": {
+    "transport": "HTTP_GET",
+    "intervalSeconds": 3,
+    "activeOnlyWhen": ["processing_view_active", "app_foreground", "job_nonterminal"],
+    "backgroundAction": "stop_periodic_polling",
+    "foregroundAction": "immediate_get_then_3s_cadence",
+    "leaveAction": "stop_local_polling_only",
+    "backendJobContinuesInBackground": true,
+    "getIsReadOnly": true,
+    "transportFailureMutatesJob": false,
+    "terminalSnapshotStopsPolling": true
+  },
+  "identity": {
+    "dedupeKeyFields": ["videoId", "sourceLanguage", "targetLanguage", "pipelineVersion"],
+    "idempotencyResultMinimumHours": 24,
+    "unknownDeliveryUsesSameKeyAndBody": true,
+    "explicitRetryUsesNewKey": true,
+    "activeOwnerMaximum": 1,
+    "failedJobIsSuccessCache": false,
+    "retryOutcomes": ["new_job", "reused_newer_owner"],
+    "updatedAt": {
+      "format": "RFC3339_TIMEZONE_REQUIRED",
+      "normalChain": "strictly_increasing",
+      "olderSnapshotAction": "ignore_stale",
+      "equalTimestampConflictingPayloadAction": "log_invariant_violation_and_ignore"
+    }
+  },
+  "completion": {
+    "wireSchema": "LearningDocument",
+    "referenceField": "learningDataPath",
+    "transcriptSource": "caption",
+    "sourceLanguage": "en",
+    "targetLanguage": "zh-Hant-TW",
+    "wordsRequired": true,
+    "emptyWordsAllowed": true,
+    "emptyWordsBehavior": {
+      "documentAccepted": true,
+      "sentenceSeekEnabled": true,
+      "wordHighlightEnabled": false
+    }
+  },
+  "releaseAEffects": {
+    "audioDownloads": 0,
+    "sttCalls": 0,
+    "pollJobCreates": 0,
+    "pollCaptionPipelineStarts": 0,
+    "pollTranslationCalls": 0,
+    "backgroundJobMutations": 0
+  },
+  "openDecisions": [
+    {
+      "id": "D2-A",
+      "state": "OPEN",
+      "decision": "caption/LLM provider, model/version, provider timeout, automatic retry transport details, pipeline release value, and per-job cost cap"
+    },
+    {
+      "id": "D3-A",
+      "state": "OPEN",
+      "decision": "20-video Release A corpus, two translation reviewers, and latency/quality environment"
+    },
+    {
+      "id": "D5-A",
+      "state": "OPEN",
+      "decision": "7-day success-cache purge enforcement and deletion evidence"
+    },
+    {
+      "id": "SG-02",
+      "state": "OPEN",
+      "decision": "processing timeout threshold and stage-specific budgets"
+    },
+    {
+      "id": "SG-03",
+      "state": "OPEN",
+      "decision": "ProcessingJob retention duration after terminal state"
+    }
+  ],
+  "notRun": [
+    "API_SERVER_RUNTIME",
+    "QUEUE_WORKER_AND_STORE",
+    "IOS_POLLING_AND_LIFECYCLE",
+    "CAPTION_AND_LLM_PROVIDERS",
+    "CONCURRENCY_AND_LOAD",
+    "LATENCY_SUCCESS_RATE_AND_COST",
+    "CACHE_PURGE_AND_RETENTION",
+    "BUILD_DEPLOYMENT_AND_TESTFLIGHT"
+  ]
+}

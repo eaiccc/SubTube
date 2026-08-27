@@ -1,0 +1,55 @@
+{
+  "case": "same_key_different_canonical_body_conflict",
+  "priorRequest": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "ffffffff-ffff-4fff-8fff-ffffffffffff" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=conflict001",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "priorResponse": {
+    "status": 202,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-006",
+      "videoId": "conflict001",
+      "title": "Idempotency conflict fixture",
+      "duration": 45.0,
+      "status": "queued",
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": null,
+      "updatedAt": "2026-08-25T06:40:00Z"
+    }
+  },
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "ffffffff-ffff-4fff-8fff-ffffffffffff" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=conflict002",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 409,
+    "headers": {},
+    "bodySchema": "APIError",
+    "body": {
+      "errorCode": "idempotency_conflict",
+      "errorMessageKey": "parse.error.idempotencyConflict",
+      "retryable": false
+    }
+  },
+  "expectedEffects": {
+    "jobCreated": false,
+    "captionPipelineStarts": 0,
+    "translationCalls": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

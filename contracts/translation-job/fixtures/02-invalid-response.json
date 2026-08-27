@@ -1,0 +1,63 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "invalid_response",
+  "cases": [
+    {
+      "case": "second_invalid_response_fails_without_success_cache",
+      "videoId": "BadJson0001",
+      "input": {
+        "sourceLanguage": "en",
+        "targetLanguage": "zh-Hant-TW",
+        "transcriptSource": "caption",
+        "pipelineVersion": "release-a-caption-v1",
+        "segments": [
+          { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson." },
+          { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin." }
+        ]
+      },
+      "attempts": [
+        { "outcome": "malformed_json", "bodyText": "{\"segments\":[" },
+        {
+          "outcome": "response",
+          "body": {
+            "sourceLanguage": "en",
+            "targetLanguage": "zh-Hant-TW",
+            "transcriptSource": "caption",
+            "pipelineVersion": "release-a-caption-v1",
+            "segments": [
+              { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "translation": "歡迎來到這堂課。" },
+              { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "translation": "   " }
+            ]
+          }
+        }
+      ],
+      "cacheProbe": null,
+      "expected": {
+        "job": {
+          "jobId": "job-translation-003",
+          "videoId": "BadJson0001",
+          "title": "Invalid response fixture",
+          "duration": 5,
+          "status": "failed",
+          "errorCode": "translation_invalid_response",
+          "errorMessageKey": "parse.error.translationInvalidResponse",
+          "retryable": true,
+          "learningDataPath": null,
+          "updatedAt": "2026-08-27T12:32:02Z"
+        },
+        "learningDocument": null,
+        "effects": {
+          "translationCallsTotal": 2,
+          "automaticRetriesUsed": 1,
+          "successfulCacheWritten": false,
+          "readyResultPersisted": false,
+          "cacheHit": false,
+          "legacyCacheReused": false,
+          "audioDownloads": 0,
+          "sttCalls": 0,
+          "statusTrace": ["translating", "failed"]
+        }
+      }
+    }
+  ]
+}

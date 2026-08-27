@@ -1,0 +1,29 @@
+{
+  "case": "unsupported_non_english_video",
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=nonenglish1",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 422,
+    "headers": {},
+    "bodySchema": "APIError",
+    "body": {
+      "errorCode": "non_english",
+      "errorMessageKey": "parse.error.nonEnglish",
+      "retryable": false
+    }
+  },
+  "expectedEffects": {
+    "jobCreated": false,
+    "captionPipelineStarts": 0,
+    "translationCalls": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

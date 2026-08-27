@@ -1,0 +1,46 @@
+{
+  "case": "learning_data_without_word_timestamps",
+  "request": {
+    "method": "GET",
+    "path": "/v1/videos/abcdefghijk/learning-data?target=zh-Hant-TW",
+    "headers": {},
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {},
+    "bodySchema": "LearningDocument",
+    "body": {
+      "videoId": "abcdefghijk",
+      "sourceLanguage": "en",
+      "targetLanguage": "zh-Hant-TW",
+      "pipelineVersion": "release-a-caption-v1",
+      "transcriptSource": "caption",
+      "segments": [
+        {
+          "id": "seg-001",
+          "startTime": 0.0,
+          "endTime": 2.5,
+          "originalText": "Welcome to the lesson.",
+          "translatedText": "歡迎來到這堂課。",
+          "words": []
+        },
+        {
+          "id": "seg-002",
+          "startTime": 2.5,
+          "endTime": 5.0,
+          "originalText": "Let us begin.",
+          "translatedText": "我們開始吧。",
+          "words": []
+        }
+      ]
+    }
+  },
+  "expectedEffects": {
+    "documentAccepted": true,
+    "sentenceSeekEnabled": true,
+    "wordHighlightEnabled": false,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

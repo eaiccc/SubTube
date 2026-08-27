@@ -1,0 +1,76 @@
+{
+  "$schema": "./schemas/contract.schema.json",
+  "contractVersion": "1.0.0",
+  "issue": 1718,
+  "release": "A",
+  "pipelineIdentity": {
+    "pipelineVersion": "release-a-caption-v1",
+    "dedupeKeyFields": ["videoId", "sourceLanguage", "targetLanguage", "pipelineVersion"],
+    "identityChangeReusesOldSuccessCache": false,
+    "identityChangeReusesOldInFlightOwner": false
+  },
+  "adapter": {
+    "executionBoundary": "server_only",
+    "provider": "OpenAI API",
+    "endpoint": "Responses API",
+    "modelSnapshot": "gpt-5.4-mini-2026-03-17",
+    "reasoningEffort": "none",
+    "structuredOutputs": true,
+    "inputSchema": "./schemas/translation-input.schema.json",
+    "outputSchema": "./schemas/translation-output.schema.json",
+    "inputTokenBudgetPerAttempt": 12000,
+    "outputTokenBudgetPerAttempt": 12000,
+    "timeoutMs": 20000,
+    "modelFallbacks": []
+  },
+  "retryPolicy": {
+    "retryOn": ["translation_schema_or_semantic_invalid"],
+    "maxAutomaticRetries": 1,
+    "maxAttempts": 2,
+    "providerFailureAutomaticRetries": 0
+  },
+  "failureMappings": {
+    "invalidResponse": {
+      "errorCode": "translation_invalid_response",
+      "errorMessageKey": "parse.error.translationInvalidResponse",
+      "retryable": true,
+      "successfulCacheWritten": false
+    },
+    "providerFailure": {
+      "errorCode": "translation_provider_failed",
+      "errorMessageKey": "parse.error.translationProviderFailed",
+      "retryable": true,
+      "successfulCacheWritten": false
+    }
+  },
+  "security": {
+    "credentialBoundary": "server_only",
+    "credentialStorage": "server_secret_store",
+    "credentialForwardedToClient": false,
+    "credentialPersistedInFixtures": false,
+    "credentialLogged": false,
+    "rawProviderPayloadLogged": false
+  },
+  "costOracle": {
+    "baseWorstCaseUsd": 0.126,
+    "regionalWorstCaseUsd": 0.1386,
+    "hardCapUsd": 0.15,
+    "runtimeMetering": "NOT_RUN"
+  },
+  "releaseARedLines": {
+    "audioDownloads": 0,
+    "sttCalls": 0,
+    "forbiddenStatuses": ["transcribing"],
+    "allowedTranscriptSources": ["caption"]
+  },
+  "notRun": [
+    "API_SERVER_AND_QUEUE_RUNTIME",
+    "OPENAI_PROVIDER_EXECUTION",
+    "CAPTION_PROVIDER_EXECUTION",
+    "BILLING_AND_COST_METERING",
+    "LATENCY_CONCURRENCY_AND_LOAD",
+    "TRANSLATION_QUALITY_AND_STAGING",
+    "IOS_BUILD_AND_INTEGRATION",
+    "DEPLOYMENT_AND_TESTFLIGHT"
+  ]
+}

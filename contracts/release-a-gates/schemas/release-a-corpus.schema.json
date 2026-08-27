@@ -1,0 +1,386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://subtube.local/contracts/release-a-gates/release-a-corpus.schema.json",
+  "title": "SubTube Release A Corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "issue", "scope", "capturedAt", "requirements", "observationMethod", "summary", "videos", "promotionGate", "qualityPlan", "testEnvironment", "fixtureSeparation", "replacementPolicy"],
+  "properties": {
+    "$schema": {"const": "../schemas/release-a-corpus.schema.json"},
+    "schemaVersion": {"const": "1.0.0"},
+    "issue": {"const": 1705},
+    "scope": {"const": "release_a_caption_only"},
+    "capturedAt": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["videoCount", "maxDurationSeconds", "sourceLanguage", "targetLanguage", "mustBePublic", "mustBeNonLive", "mustBeEmbeddable", "mustHaveRetrievableEnglishCaptions", "allowedTranscriptSources", "audioDownloadsAllowed", "sttEnabled"],
+      "properties": {
+        "videoCount": {"const": 20},
+        "maxDurationSeconds": {"const": 900},
+        "sourceLanguage": {"const": "en"},
+        "targetLanguage": {"const": "zh-Hant-TW"},
+        "mustBePublic": {"const": true},
+        "mustBeNonLive": {"const": true},
+        "mustBeEmbeddable": {"const": true},
+        "mustHaveRetrievableEnglishCaptions": {"const": true},
+        "allowedTranscriptSources": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "prefixItems": [{"const": "caption"}]
+        },
+        "audioDownloadsAllowed": {"const": false},
+        "sttEnabled": {"const": false}
+      }
+    },
+    "observationMethod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "officialHost", "queries", "observedSignals", "limitations"],
+      "properties": {
+        "surface": {"$ref": "#/$defs/nonBlankString"},
+        "officialHost": {"const": "https://www.youtube.com", "type": "string", "format": "https-url"},
+        "queries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "format": "https-url", "pattern": "^https://www\\.youtube\\.com/"}
+        },
+        "observedSignals": {"$ref": "#/$defs/nonBlankStringArray"},
+        "limitations": {"$ref": "#/$defs/nonBlankStringArray"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateCount", "verifiedCount", "rejectedCount", "maxObservedDurationSeconds", "gateStatus"],
+      "properties": {
+        "candidateCount": {"type": "integer", "minimum": 0, "maximum": 20},
+        "verifiedCount": {"type": "integer", "minimum": 0, "maximum": 20},
+        "rejectedCount": {"type": "integer", "minimum": 0, "maximum": 20},
+        "maxObservedDurationSeconds": {"type": "integer", "minimum": 1, "maximum": 900},
+        "gateStatus": {"enum": ["blocked_candidates_only", "verified_ready_for_run"]}
+      }
+    },
+    "videos": {
+      "type": "array",
+      "minItems": 20,
+      "maxItems": 20,
+      "items": {"$ref": "#/$defs/video"}
+    },
+    "promotionGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredEligibilityFlags", "candidateToVerified", "evidenceSchema", "currentBlocker"],
+      "properties": {
+        "requiredEligibilityFlags": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["public", "nonLive", "embeddable", "retrievableEnglishCaptions", "maxDurationSeconds"],
+          "properties": {
+            "public": {"const": true},
+            "nonLive": {"const": true},
+            "embeddable": {"const": true},
+            "retrievableEnglishCaptions": {"const": true},
+            "maxDurationSeconds": {"const": 900}
+          }
+        },
+        "candidateToVerified": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {"$ref": "#/$defs/nonBlankString"}
+        },
+        "evidenceSchema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requiredFields", "videosListRequiredFacts", "captionRetrievalRequired", "embedCheckRequired", "environmentFingerprintRequired"],
+          "properties": {
+            "requiredFields": {
+              "type": "array",
+              "minItems": 7,
+              "maxItems": 7,
+              "prefixItems": [
+                {"const": "runId"},
+                {"const": "runStartedAt"},
+                {"const": "checkedAt"},
+                {"const": "videosList"},
+                {"const": "captionRetrieval"},
+                {"const": "embedCheck"},
+                {"const": "environmentFingerprint"}
+              ]
+            },
+            "videosListRequiredFacts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["privacyStatus", "liveBroadcastContent", "embeddable", "durationSecondsMax", "captionAvailable", "defaultAudioLanguage"],
+              "properties": {
+                "privacyStatus": {"const": "public"},
+                "liveBroadcastContent": {"const": "none"},
+                "embeddable": {"const": true},
+                "durationSecondsMax": {"const": 900},
+                "captionAvailable": {"const": true},
+                "defaultAudioLanguage": {"const": "en"}
+              }
+            },
+            "captionRetrievalRequired": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["status", "language", "sentenceTiming", "audioDownloads", "sttCalls"],
+              "properties": {
+                "status": {"const": "approved_provider"},
+                "language": {"const": "en"},
+                "sentenceTiming": {"const": true},
+                "audioDownloads": {"const": 0},
+                "sttCalls": {"const": 0}
+              }
+            },
+            "embedCheckRequired": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["status"],
+              "properties": {"status": {"const": "pass"}}
+            },
+            "environmentFingerprintRequired": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "prefixItems": [
+                {"const": "pipelineVersion"},
+                {"const": "translationProvider"},
+                {"const": "modelSnapshot"},
+                {"const": "targetLanguage"},
+                {"const": "sttEnabled"},
+                {"const": "audioDownloadsAllowed"}
+              ]
+            }
+          }
+        },
+        "currentBlocker": {"$ref": "#/$defs/nonBlankString"}
+      }
+    },
+    "qualityPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["segmentsPerVideo", "selectionRule", "reviewers", "reviewRule", "rubric", "acceptableScoreMinimum", "aggregateAcceptanceMinimum", "expectedRatingCount", "gateFormula", "disagreementRule", "executionStatus"],
+      "properties": {
+        "segmentsPerVideo": {"const": 10},
+        "selectionRule": {"$ref": "#/$defs/nonBlankString"},
+        "reviewers": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/reviewer"}
+        },
+        "reviewRule": {"$ref": "#/$defs/nonBlankString"},
+        "rubric": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {"$ref": "#/$defs/rubricRow"}
+        },
+        "acceptableScoreMinimum": {"const": 4},
+        "aggregateAcceptanceMinimum": {"const": 0.9},
+        "expectedRatingCount": {"const": 400},
+        "gateFormula": {"const": "count(score >= 4) / 400 >= 0.90"},
+        "disagreementRule": {"$ref": "#/$defs/nonBlankString"},
+        "executionStatus": {"const": "NOT RUN"}
+      }
+    },
+    "testEnvironment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status", "requiredFingerprint", "requiredRunLanes", "requiredEvidence"],
+      "properties": {
+        "name": {"const": "release-a-staging"},
+        "status": {"enum": ["blocked_not_provisioned", "provisioned"]},
+        "requiredFingerprint": {"$ref": "#/$defs/environmentFingerprint"},
+        "requiredRunLanes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/nonBlankString"}
+        },
+        "requiredEvidence": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {"$ref": "#/$defs/nonBlankString"}
+        },
+        "runEvidence": {"$ref": "#/$defs/runEvidence"}
+      }
+    },
+    "fixtureSeparation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["releaseACorpusPurpose", "preflightRejectionFixtures", "serviceFailureFixtures", "rule"],
+      "properties": {
+        "releaseACorpusPurpose": {"$ref": "#/$defs/nonBlankString"},
+        "preflightRejectionFixtures": {"$ref": "#/$defs/nonBlankStringArray"},
+        "serviceFailureFixtures": {"$ref": "#/$defs/nonBlankStringArray"},
+        "rule": {"$ref": "#/$defs/nonBlankString"}
+      }
+    },
+    "replacementPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger", "action", "comparability", "freshness"],
+      "properties": {
+        "trigger": {"$ref": "#/$defs/nonBlankString"},
+        "action": {"$ref": "#/$defs/nonBlankString"},
+        "comparability": {"$ref": "#/$defs/nonBlankString"},
+        "freshness": {"$ref": "#/$defs/nonBlankString"}
+      }
+    }
+  },
+  "$defs": {
+    "nonBlankString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "nonBlankStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/nonBlankString"}
+    },
+    "environmentFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pipelineVersion", "translationProvider", "modelSnapshot", "targetLanguage", "sttEnabled", "audioDownloadsAllowed"],
+      "properties": {
+        "pipelineVersion": {"const": "release-a-caption-v1"},
+        "translationProvider": {"const": "OpenAI API"},
+        "modelSnapshot": {"const": "gpt-5.4-mini-2026-03-17"},
+        "targetLanguage": {"const": "zh-Hant-TW"},
+        "sttEnabled": {"const": false},
+        "audioDownloadsAllowed": {"const": false}
+      }
+    },
+    "verificationEnvironmentFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["environment", "pipelineVersion", "translationProvider", "modelSnapshot", "targetLanguage", "sttEnabled", "audioDownloadsAllowed"],
+      "properties": {
+        "environment": {"const": "release-a-staging"},
+        "pipelineVersion": {"const": "release-a-caption-v1"},
+        "translationProvider": {"const": "OpenAI API"},
+        "modelSnapshot": {"const": "gpt-5.4-mini-2026-03-17"},
+        "targetLanguage": {"const": "zh-Hant-TW"},
+        "sttEnabled": {"const": false},
+        "audioDownloadsAllowed": {"const": false}
+      }
+    },
+    "runEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runId", "runStartedAt", "runCompletedAt", "status", "verifiedVideoCount", "evidenceArtifact"],
+      "properties": {
+        "runId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"},
+        "runStartedAt": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
+        "runCompletedAt": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
+        "status": {"const": "pass"},
+        "verifiedVideoCount": {"const": 20},
+        "evidenceArtifact": {"$ref": "#/$defs/nonBlankString"}
+      }
+    },
+    "verificationEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runId", "runStartedAt", "checkedAt", "videosList", "captionRetrieval", "embedCheck", "environmentFingerprint"],
+      "properties": {
+        "runId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"},
+        "runStartedAt": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
+        "checkedAt": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
+        "videosList": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["privacyStatus", "liveBroadcastContent", "embeddable", "durationSeconds", "captionAvailable", "defaultAudioLanguage"],
+          "properties": {
+            "privacyStatus": {"const": "public"},
+            "liveBroadcastContent": {"const": "none"},
+            "embeddable": {"const": true},
+            "durationSeconds": {"type": "integer", "minimum": 1, "maximum": 900},
+            "captionAvailable": {"const": true},
+            "defaultAudioLanguage": {"const": "en"}
+          }
+        },
+        "captionRetrieval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "provider", "language", "sentenceTiming", "audioDownloads", "sttCalls"],
+          "properties": {
+            "status": {"const": "approved_provider"},
+            "provider": {"$ref": "#/$defs/nonBlankString"},
+            "language": {"const": "en"},
+            "sentenceTiming": {"const": true},
+            "audioDownloads": {"const": 0},
+            "sttCalls": {"const": 0}
+          }
+        },
+        "embedCheck": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "player"],
+          "properties": {
+            "status": {"const": "pass"},
+            "player": {"const": "youtube_iframe"}
+          }
+        },
+        "environmentFingerprint": {"$ref": "#/$defs/verificationEnvironmentFingerprint"}
+      }
+    },
+    "video": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ordinal", "videoId", "url", "title", "channel", "observedDurationSeconds", "observationQuery", "status", "observedSignals", "unverifiedFields"],
+      "properties": {
+        "ordinal": {"type": "integer", "minimum": 1, "maximum": 20},
+        "videoId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{11}$"},
+        "url": {"type": "string", "format": "https-url", "pattern": "^https://www\\.youtube\\.com/watch\\?v=[A-Za-z0-9_-]{11}$"},
+        "title": {"$ref": "#/$defs/nonBlankString"},
+        "channel": {"$ref": "#/$defs/nonBlankString"},
+        "observedDurationSeconds": {"type": "integer", "minimum": 1, "maximum": 900},
+        "observationQuery": {"enum": [1, 2]},
+        "status": {"enum": ["candidate", "verified", "invalid"]},
+        "observedSignals": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["searchVisible", "fixedDuration", "englishMetadata", "captionsBadge", "verifiedChannel"],
+          "properties": {
+            "searchVisible": {"const": true},
+            "fixedDuration": {"const": true},
+            "englishMetadata": {"const": true},
+            "captionsBadge": {"const": true},
+            "verifiedChannel": {"const": true}
+          }
+        },
+        "unverifiedFields": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/nonBlankString"}
+        },
+        "verificationEvidence": {"$ref": "#/$defs/verificationEvidence"}
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "locale", "role"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonBlankString"},
+        "locale": {"const": "zh-Hant-TW"},
+        "role": {"$ref": "#/$defs/nonBlankString"}
+      }
+    },
+    "rubricRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "label", "definition"],
+      "properties": {
+        "score": {"type": "integer", "minimum": 1, "maximum": 5},
+        "label": {"$ref": "#/$defs/nonBlankString"},
+        "definition": {"$ref": "#/$defs/nonBlankString"}
+      }
+    }
+  }
+}

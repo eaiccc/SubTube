@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://subtube.invalid/contracts/translation-job/translation-output.schema.json",
+  "title": "SubTube Release A Structured Output",
+  "type": "object",
+  "required": ["sourceLanguage", "targetLanguage", "transcriptSource", "pipelineVersion", "segments"],
+  "properties": {
+    "sourceLanguage": { "const": "en" },
+    "targetLanguage": { "const": "zh-Hant-TW" },
+    "transcriptSource": { "const": "caption" },
+    "pipelineVersion": { "const": "release-a-caption-v1" },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["segmentId", "startTime", "endTime", "translation"],
+        "properties": {
+          "segmentId": { "type": "string", "pattern": ".*\\S.*" },
+          "startTime": { "type": "number", "minimum": 0 },
+          "endTime": { "type": "number", "exclusiveMinimum": 0 },
+          "translation": { "type": "string", "pattern": ".*\\S.*" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

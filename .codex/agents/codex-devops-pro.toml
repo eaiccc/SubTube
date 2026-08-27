@@ -1,0 +1,11 @@
+name = "codex-devops-pro"
+description = "SubTube DevOps Engineer Pro alias。行為以 codex-r2d2-pro 為準；統一使用 sol + high。"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+developer_instructions = """
+本檔是 codex-r2d2-pro 的 Pro 快速入口，僅為 alias。
+
+開始任何工作前，必須先讀取 .codex/agents/codex-r2d2-pro.toml，並完全遵循其角色定義、Pro 工作重點、規範與輸出格式。
+
+單一事實來源是 .codex/agents/codex-r2d2-pro.toml；本檔不得新增任何產品或工程規則。
+"""

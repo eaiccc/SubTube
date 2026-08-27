@@ -1,0 +1,51 @@
+{
+  "dispatch_id": "dispatch-example",
+  "project": "SubTube MVP",
+  "repo": "eaiccc/Anki2",
+  "budget_sp": 15,
+  "target_budget_sp": 10,
+  "completion_mode": "each_ticket",
+  "review_policy": "rework_until_closed",
+  "max_ticket_sp": 5,
+  "max_in_flight": 2,
+  "max_retries": 3,
+  "targets": [1725, 1727],
+  "items": [
+    {
+      "issue": 1717,
+      "title": "Freeze Release A API, state and error contract",
+      "estimate_sp": 5,
+      "depends_on": [],
+      "writer": "codex-vitruvius-pro",
+      "reviewer": "codex-vigil-pro",
+      "qa": "codex-hermione-pro",
+      "attempts": 0,
+      "review_cycles": 0,
+      "state": "todo"
+    },
+    {
+      "issue": 1725,
+      "title": "URL normalization and preflight rejection gate",
+      "estimate_sp": 5,
+      "depends_on": [1717],
+      "writer": "codex-uhura-pro",
+      "reviewer": "codex-spock-review-pro",
+      "qa": "codex-hermione-pro",
+      "attempts": 0,
+      "review_cycles": 0,
+      "state": "todo"
+    },
+    {
+      "issue": 1727,
+      "title": "Caption parse job state and polling lifecycle",
+      "estimate_sp": 5,
+      "depends_on": [1717, 1725],
+      "writer": "codex-uhura-pro",
+      "reviewer": "codex-spock-review-pro",
+      "qa": "codex-hermione-pro",
+      "attempts": 0,
+      "review_cycles": 0,
+      "state": "todo"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "case": "same_key_same_request_exact_replay",
+  "request": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "77777777-7777-4777-8777-777777777777" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=replay00001",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "response": {
+    "status": 202,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-004",
+      "videoId": "replay00001",
+      "title": "Replay fixture",
+      "duration": 61.0,
+      "status": "queued",
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": null,
+      "updatedAt": "2026-08-25T06:20:00Z"
+    }
+  },
+  "replayRequest": {
+    "method": "POST",
+    "path": "/v1/parse-jobs",
+    "headers": { "Idempotency-Key": "77777777-7777-4777-8777-777777777777" },
+    "body": {
+      "url": "https://www.youtube.com/watch?v=replay00001",
+      "targetLanguage": "zh-Hant-TW"
+    }
+  },
+  "replayResponse": {
+    "status": 202,
+    "headers": {},
+    "bodySchema": "ProcessingJob",
+    "body": {
+      "jobId": "job-release-a-004",
+      "videoId": "replay00001",
+      "title": "Replay fixture",
+      "duration": 61.0,
+      "status": "queued",
+      "errorCode": null,
+      "errorMessageKey": null,
+      "retryable": false,
+      "learningDataPath": null,
+      "updatedAt": "2026-08-25T06:20:00Z"
+    }
+  },
+  "expectedEffects": {
+    "jobCreatedCount": 1,
+    "sameResponse": true,
+    "minimumRetentionHours": 24,
+    "captionPipelineStarted": false,
+    "translationPipelineStarted": false,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  }
+}

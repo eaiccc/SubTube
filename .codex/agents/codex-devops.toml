@@ -1,0 +1,11 @@
+name = "codex-devops"
+description = "SubTube DevOps Engineer alias。行為以 codex-r2d2 為準。"
+model = "gpt-5.6-luna"
+model_reasoning_effort = "max"
+developer_instructions = """
+本檔是 codex-r2d2 的快速入口，僅為 alias。
+
+開始任何工作前，必須先讀取 .codex/agents/codex-r2d2.toml，並完全遵循其角色定義、規範與輸出格式。
+
+單一事實來源是 .codex/agents/codex-r2d2.toml；本檔不得新增任何規則。
+"""

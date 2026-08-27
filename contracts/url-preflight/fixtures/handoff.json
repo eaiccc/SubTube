@@ -1,0 +1,60 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "handoff",
+  "cases": [
+    {
+      "case": "different_keys_equivalent_urls_share_dedupe_key",
+      "input": {
+        "first": {
+          "idempotencyKey": "11111111-2222-4333-8444-555555555555",
+          "body": { "url": "https://www.youtube.com/watch?v=SameVideo01&utm_source=test", "targetLanguage": "zh-Hant-TW" }
+        },
+        "second": {
+          "idempotencyKey": "66666666-7777-4888-8999-aaaaaaaaaaaa",
+          "body": { "url": "https://youtu.be/SameVideo01?si=tracking", "targetLanguage": "zh-Hant-TW" }
+        }
+      },
+      "expected": {
+        "sameVideoId": "SameVideo01",
+        "sameDedupeKey": "SameVideo01|en|zh-Hant-TW|release-a-caption-v1",
+        "sameRequestFingerprint": false,
+        "reuseInFlightOrReadyOwner": true
+      },
+      "expectedEffects": { "activeOwnerMaximum": 1, "additionalJobCreated": false, "additionalCaptionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "same_key_same_raw_body_is_exact_replay",
+      "input": {
+        "first": {
+          "idempotencyKey": "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
+          "body": { "url": "https://youtu.be/ReplayRaw01?si=tracking", "targetLanguage": "zh-Hant-TW" }
+        },
+        "second": {
+          "idempotencyKey": "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
+          "body": { "url": "https://youtu.be/ReplayRaw01?si=tracking", "targetLanguage": "zh-Hant-TW" }
+        }
+      },
+      "expected": { "outcome": "exact_replay", "minimumRetentionHours": 24, "normalizationRunsOnSecondRequest": 0, "preflightRunsOnSecondRequest": 0 },
+      "expectedEffects": { "jobCreatedTotal": 1, "captionPipelineStartsTotal": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    },
+    {
+      "case": "same_key_equivalent_but_different_raw_url_conflicts",
+      "input": {
+        "first": {
+          "idempotencyKey": "12345678-1234-4234-8234-123456789abc",
+          "body": { "url": "https://www.youtube.com/watch?v=Conflict001", "targetLanguage": "zh-Hant-TW" }
+        },
+        "second": {
+          "idempotencyKey": "12345678-1234-4234-8234-123456789abc",
+          "body": { "url": "https://youtu.be/Conflict001", "targetLanguage": "zh-Hant-TW" }
+        }
+      },
+      "expected": {
+        "normalizedVideoIdWouldMatch": "Conflict001",
+        "outcome": "idempotency_conflict",
+        "response": { "status": 409, "bodySchema": "APIError", "body": { "errorCode": "idempotency_conflict", "errorMessageKey": "parse.error.idempotencyConflict", "retryable": false } }
+      },
+      "expectedEffects": { "jobCreated": false, "jobIdReturned": false, "normalizationRunsOnSecondRequest": 0, "sourceMetadataCalls": 0, "captionPipelineStarts": 0, "translationCalls": 0, "audioDownloads": 0, "sttCalls": 0 }
+    }
+  ]
+}

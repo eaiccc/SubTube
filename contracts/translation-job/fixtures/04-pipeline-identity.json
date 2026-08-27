@@ -1,0 +1,81 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "pipeline_identity",
+  "cases": [
+    {
+      "case": "pipeline_change_does_not_reuse_legacy_success_cache",
+      "videoId": "Boundary900",
+      "input": {
+        "sourceLanguage": "en",
+        "targetLanguage": "zh-Hant-TW",
+        "transcriptSource": "caption",
+        "pipelineVersion": "release-a-caption-v1",
+        "segments": [
+          { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson." },
+          { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin." }
+        ]
+      },
+      "attempts": [
+        {
+          "outcome": "response",
+          "body": {
+            "sourceLanguage": "en",
+            "targetLanguage": "zh-Hant-TW",
+            "transcriptSource": "caption",
+            "pipelineVersion": "release-a-caption-v1",
+            "segments": [
+              { "segmentId": "seg-001", "startTime": 0, "endTime": 2.5, "translation": "歡迎來到這堂課。" },
+              { "segmentId": "seg-002", "startTime": 2.5, "endTime": 5, "translation": "我們開始吧。" }
+            ]
+          }
+        }
+      ],
+      "cacheProbe": {
+        "lookupDedupeKey": "Boundary900|en|zh-Hant-TW|release-a-caption-v1",
+        "existingEntries": [
+          {
+            "dedupeKey": "Boundary900|en|zh-Hant-TW|caption-v1+translation-v1",
+            "pipelineVersion": "caption-v1+translation-v1",
+            "status": "ready"
+          }
+        ]
+      },
+      "expected": {
+        "job": {
+          "jobId": "job-translation-005",
+          "videoId": "Boundary900",
+          "title": "Pipeline identity fixture",
+          "duration": 5,
+          "status": "ready",
+          "errorCode": null,
+          "errorMessageKey": null,
+          "retryable": false,
+          "learningDataPath": "/v1/videos/Boundary900/learning-data?target=zh-Hant-TW",
+          "updatedAt": "2026-08-27T12:34:01Z"
+        },
+        "learningDocument": {
+          "videoId": "Boundary900",
+          "sourceLanguage": "en",
+          "targetLanguage": "zh-Hant-TW",
+          "pipelineVersion": "release-a-caption-v1",
+          "transcriptSource": "caption",
+          "segments": [
+            { "id": "seg-001", "startTime": 0, "endTime": 2.5, "originalText": "Welcome to the lesson.", "translatedText": "歡迎來到這堂課。", "words": [] },
+            { "id": "seg-002", "startTime": 2.5, "endTime": 5, "originalText": "Let us begin.", "translatedText": "我們開始吧。", "words": [] }
+          ]
+        },
+        "effects": {
+          "translationCallsTotal": 1,
+          "automaticRetriesUsed": 0,
+          "successfulCacheWritten": true,
+          "readyResultPersisted": true,
+          "cacheHit": false,
+          "legacyCacheReused": false,
+          "audioDownloads": 0,
+          "sttCalls": 0,
+          "statusTrace": ["translating", "ready"]
+        }
+      }
+    }
+  ]
+}

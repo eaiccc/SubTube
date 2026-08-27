@@ -1,0 +1,411 @@
+{
+  "$schema": "../schemas/release-a-corpus.schema.json",
+  "schemaVersion": "1.0.0",
+  "issue": 1705,
+  "scope": "release_a_caption_only",
+  "capturedAt": "2026-08-27T00:35:00+08:00",
+  "requirements": {
+    "videoCount": 20,
+    "maxDurationSeconds": 900,
+    "sourceLanguage": "en",
+    "targetLanguage": "zh-Hant-TW",
+    "mustBePublic": true,
+    "mustBeNonLive": true,
+    "mustBeEmbeddable": true,
+    "mustHaveRetrievableEnglishCaptions": true,
+    "allowedTranscriptSources": ["caption"],
+    "audioDownloadsAllowed": false,
+    "sttEnabled": false
+  },
+  "observationMethod": {
+    "surface": "Visible YouTube search results UI",
+    "officialHost": "https://www.youtube.com",
+    "queries": [
+      "https://www.youtube.com/results?search_query=TED-Ed+lessons",
+      "https://www.youtube.com/results?search_query=TED-Ed+science+lessons"
+    ],
+    "observedSignals": [
+      "normal watch URL visible in search results",
+      "fixed duration label rather than a live badge",
+      "English title/description",
+      "visible captions badge",
+      "verified TED or TED-Ed channel"
+    ],
+    "limitations": [
+      "Search-page visibility is not the server preflight contract.",
+      "status.embeddable, status.privacyStatus, snippet.liveBroadcastContent and snippet.defaultAudioLanguage were not read through videos.list.",
+      "A captions badge does not prove that an approved provider can retrieve English caption text.",
+      "No caption, translation, latency, synchronization or quality provider call was run."
+    ]
+  },
+  "summary": {
+    "candidateCount": 20,
+    "verifiedCount": 0,
+    "rejectedCount": 0,
+    "maxObservedDurationSeconds": 646,
+    "gateStatus": "blocked_candidates_only"
+  },
+  "videos": [
+    {
+      "ordinal": 1,
+      "videoId": "wtovy-1-QUM",
+      "url": "https://www.youtube.com/watch?v=wtovy-1-QUM",
+      "title": "This is what happens in your brain when you can’t recall a word - Cella Wright",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 331,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 2,
+      "videoId": "TjPFZaMe2yw",
+      "url": "https://www.youtube.com/watch?v=TjPFZaMe2yw",
+      "title": "3 tips on how to study effectively",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 309,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 3,
+      "videoId": "7yDmGnA8Hw0",
+      "url": "https://www.youtube.com/watch?v=7yDmGnA8Hw0",
+      "title": "Can you solve the bridge riddle? - Alex Gendler",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 230,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 4,
+      "videoId": "8Z9FQxcCAZ0",
+      "url": "https://www.youtube.com/watch?v=8Z9FQxcCAZ0",
+      "title": "Everything you need to know to read Homer's Odyssey - Jill Dash",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 297,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 5,
+      "videoId": "JAyuHIthHco",
+      "url": "https://www.youtube.com/watch?v=JAyuHIthHco",
+      "title": "What would happen if everyone stopped eating meat tomorrow? - Carolyn Beans",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 277,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 6,
+      "videoId": "7K3KdgDcdYc",
+      "url": "https://www.youtube.com/watch?v=7K3KdgDcdYc",
+      "title": "How did ancient civilizations make ice cream? - Vivian Jiang",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 295,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 7,
+      "videoId": "CqgmozFr_GM",
+      "url": "https://www.youtube.com/watch?v=CqgmozFr_GM",
+      "title": "How to stay calm under pressure - Noa Kageyama and Pen-Pen Chen",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 269,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 8,
+      "videoId": "l_NYrWqUR40",
+      "url": "https://www.youtube.com/watch?v=l_NYrWqUR40",
+      "title": "3 tips to boost your confidence - TED-Ed",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 257,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 9,
+      "videoId": "XFhY4Vy3IHc",
+      "url": "https://www.youtube.com/watch?v=XFhY4Vy3IHc",
+      "title": "Why is English so confusing? - Arika Okrent",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 334,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 10,
+      "videoId": "idrbwnWLJ7w",
+      "url": "https://www.youtube.com/watch?v=idrbwnWLJ7w",
+      "title": "What staying up all night does to your brain - Anna Rothschild",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 337,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 11,
+      "videoId": "o_XVt5rdpFY",
+      "url": "https://www.youtube.com/watch?v=o_XVt5rdpFY",
+      "title": "The secrets of learning a new language | Lýdia Machová | TED",
+      "channel": "TED",
+      "observedDurationSeconds": 646,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 12,
+      "videoId": "jLOuMXnM5wk",
+      "url": "https://www.youtube.com/watch?v=jLOuMXnM5wk",
+      "title": "The best way to become good at something might surprise you - David Epstein",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 346,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 13,
+      "videoId": "iDbdXTMnOmE",
+      "url": "https://www.youtube.com/watch?v=iDbdXTMnOmE",
+      "title": "How to manage your time more effectively (according to machines) - Brian Christian",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 310,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 14,
+      "videoId": "R0JKCYZ8hng",
+      "url": "https://www.youtube.com/watch?v=R0JKCYZ8hng",
+      "title": "How playing an instrument benefits your brain - Anita Collins",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 285,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 15,
+      "videoId": "mA1lnxfqHk8",
+      "url": "https://www.youtube.com/watch?v=mA1lnxfqHk8",
+      "title": "The missing ingredient in how we learn",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 350,
+      "observationQuery": 1,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 16,
+      "videoId": "yc2-363MIQs",
+      "url": "https://www.youtube.com/watch?v=yc2-363MIQs",
+      "title": "The science of static electricity - Anuradha Bhagwat",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 219,
+      "observationQuery": 2,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 17,
+      "videoId": "CVo225pUaSA",
+      "url": "https://www.youtube.com/watch?v=CVo225pUaSA",
+      "title": "The science behind the myth: Homer's Odyssey - Matt Kaplan",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 272,
+      "observationQuery": 2,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 18,
+      "videoId": "5c6C3rHOdf8",
+      "url": "https://www.youtube.com/watch?v=5c6C3rHOdf8",
+      "title": "At what moment are you dead? - Randall Hayes",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 334,
+      "observationQuery": 2,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 19,
+      "videoId": "n6wpNhyreDE",
+      "url": "https://www.youtube.com/watch?v=n6wpNhyreDE",
+      "title": "How to make the perfect cookies (according to science) - Stephanie Warren",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 270,
+      "observationQuery": 2,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    },
+    {
+      "ordinal": 20,
+      "videoId": "2njn71TqkjA",
+      "url": "https://www.youtube.com/watch?v=2njn71TqkjA",
+      "title": "What Earth in 2050 could look like - Shannon Odell",
+      "channel": "TED-Ed",
+      "observedDurationSeconds": 300,
+      "observationQuery": 2,
+      "status": "candidate",
+      "observedSignals": {"searchVisible": true, "fixedDuration": true, "englishMetadata": true, "captionsBadge": true, "verifiedChannel": true},
+      "unverifiedFields": ["privacyStatus", "liveBroadcastContent", "embeddable", "defaultAudioLanguage", "englishCaptionTextRetrievable"]
+    }
+  ],
+  "promotionGate": {
+    "requiredEligibilityFlags": {
+      "public": true,
+      "nonLive": true,
+      "embeddable": true,
+      "retrievableEnglishCaptions": true,
+      "maxDurationSeconds": 900
+    },
+    "candidateToVerified": [
+      "Within 24 hours before the run, videos.list records public, non-live, embeddable, duration <= PT15M, captions=true and English default audio or an equivalent server language determination.",
+      "The approved caption-text provider retrieves an English track and valid sentence timing without audio or STT.",
+      "The IFrame player loads in the Release A iOS/staging environment.",
+      "The evidence record includes runId, runStartedAt, checkedAt, environment, provider/pipeline fingerprint and sanitized response facts."
+    ],
+    "evidenceSchema": {
+      "requiredFields": ["runId", "runStartedAt", "checkedAt", "videosList", "captionRetrieval", "embedCheck", "environmentFingerprint"],
+      "videosListRequiredFacts": {
+        "privacyStatus": "public",
+        "liveBroadcastContent": "none",
+        "embeddable": true,
+        "durationSecondsMax": 900,
+        "captionAvailable": true,
+        "defaultAudioLanguage": "en"
+      },
+      "captionRetrievalRequired": {
+        "status": "approved_provider",
+        "language": "en",
+        "sentenceTiming": true,
+        "audioDownloads": 0,
+        "sttCalls": 0
+      },
+      "embedCheckRequired": {"status": "pass"},
+      "environmentFingerprintRequired": [
+        "pipelineVersion",
+        "translationProvider",
+        "modelSnapshot",
+        "targetLanguage",
+        "sttEnabled",
+        "audioDownloadsAllowed"
+      ]
+    },
+    "currentBlocker": "No approved caption-text provider, YouTube API credential, backend preflight runtime or iOS staging player exists."
+  },
+  "qualityPlan": {
+    "segmentsPerVideo": 10,
+    "selectionRule": "After segmentation is frozen, select the segment nearest each 5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85% and 95% point by segment ordinal; do not hand-pick easy sentences.",
+    "reviewers": [
+      {
+        "id": "codex-hermione-pro",
+        "locale": "zh-Hant-TW",
+        "role": "primary independent translation-quality scorer"
+      },
+      {
+        "id": "codex-mcgonagall-review-pro",
+        "locale": "zh-Hant-TW",
+        "role": "secondary independent translation-quality scorer"
+      }
+    ],
+    "reviewRule": "Both reviewers score all 200 sampled segments independently before seeing the other score. They do not edit translations during scoring.",
+    "rubric": [
+      {"score": 1, "label": "Unusable", "definition": "Meaning is wrong or missing enough that the learner is materially misled."},
+      {"score": 2, "label": "Major repair", "definition": "Some meaning survives, but major omissions, additions, terminology or grammar errors require rewriting."},
+      {"score": 3, "label": "Understandable", "definition": "Core meaning is understandable, but wording is notably unnatural or contains non-material inaccuracies."},
+      {"score": 4, "label": "Acceptable", "definition": "Meaning is correct and complete, with natural enough Taiwan Traditional Chinese and only cosmetic issues."},
+      {"score": 5, "label": "Excellent", "definition": "Accurate, complete and idiomatic Taiwan Traditional Chinese requiring no meaningful edit."}
+    ],
+    "acceptableScoreMinimum": 4,
+    "aggregateAcceptanceMinimum": 0.9,
+    "expectedRatingCount": 400,
+    "gateFormula": "count(score >= 4) / 400 >= 0.90",
+    "disagreementRule": "Record both scores. A difference greater than 1 is flagged for PO adjudication but neither original score is replaced in the launch metric.",
+    "executionStatus": "NOT RUN"
+  },
+  "testEnvironment": {
+    "name": "release-a-staging",
+    "status": "blocked_not_provisioned",
+    "requiredFingerprint": {
+      "pipelineVersion": "release-a-caption-v1",
+      "translationProvider": "OpenAI API",
+      "modelSnapshot": "gpt-5.4-mini-2026-03-17",
+      "targetLanguage": "zh-Hant-TW",
+      "sttEnabled": false,
+      "audioDownloadsAllowed": false
+    },
+    "requiredRunLanes": [
+      "cold-cache end-to-end caption path",
+      "ready-cache reuse with zero caption/LLM/STT provider calls"
+    ],
+    "requiredEvidence": [
+      "run ID and UTC timestamps",
+      "deployment/version fingerprint",
+      "per-video preflight facts and replacement history",
+      "provider call counts and direct provider cost",
+      "job_created_at and ready_at",
+      "10 sampled segment IDs and two independent scores",
+      "sentence synchronization offsets",
+      "sanitized errors without full captions, raw audio or secrets"
+    ]
+  },
+  "fixtureSeparation": {
+    "releaseACorpusPurpose": "Only preflight-pass caption success, quality, latency and synchronization runs.",
+    "preflightRejectionFixtures": [
+      "contracts/release-a/fixtures/06-preflight-captions-unavailable.json",
+      "contracts/release-a/fixtures/07-preflight-private-video.json",
+      "contracts/release-a/fixtures/12-preflight-invalid-url.json",
+      "contracts/release-a/fixtures/13-preflight-live-video.json",
+      "contracts/release-a/fixtures/14-preflight-not-embeddable.json",
+      "contracts/release-a/fixtures/15-preflight-non-english.json",
+      "contracts/release-a/fixtures/16-preflight-video-too-long.json"
+    ],
+    "serviceFailureFixtures": [
+      "contracts/release-a/fixtures/08-job-failed-retryable.json"
+    ],
+    "rule": "Rejection and service-failure fixture outcomes are reported separately and never enter the 20-video Release A success-rate, latency or translation-quality denominator."
+  },
+  "replacementPolicy": {
+    "trigger": "A candidate or verified video is deleted, private, live/upcoming, non-embeddable, over 900 seconds, no longer English, loses retrievable English captions or fails the iOS embed check.",
+    "action": "Mark the entry invalid with checkedAt and reason; replace it before a run with another public, non-live, embeddable, English, caption-retrievable video at or below 900 seconds. Never relax the duration or caption rule.",
+    "comparability": "A replacement receives a new corpus revision. Do not merge metrics across revisions; rerun all 20 videos for a launch-gate result.",
+    "freshness": "Recheck every video within 24 hours before each gate run."
+  }
+}

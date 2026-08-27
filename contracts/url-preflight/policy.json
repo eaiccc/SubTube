@@ -1,0 +1,109 @@
+{
+  "$schema": "./schemas/policy.schema.json",
+  "contractVersion": "1.0.0",
+  "issue": 1725,
+  "release": "A",
+  "endpoint": "POST /v1/parse-jobs",
+  "sourceContract": "../release-a/openapi.json",
+  "normalization": {
+    "acceptedSchemes": ["https"],
+    "acceptedForms": [
+      { "host": "youtube.com", "path": "/watch", "videoIdLocation": "query.v" },
+      { "host": "www.youtube.com", "path": "/watch", "videoIdLocation": "query.v" },
+      { "host": "youtu.be", "path": "/{videoId}", "videoIdLocation": "path.segment[0]" }
+    ],
+    "videoIdPattern": "^[A-Za-z0-9_-]{11}$",
+    "canonicalUrlTemplate": "https://www.youtube.com/watch?v={videoId}",
+    "stripTrackingQuery": true,
+    "stripFragment": true,
+    "rejectAmbiguousVideoIds": true,
+    "idempotencyFingerprintUsesRawBody": true
+  },
+  "requestOrder": [
+    "idempotency_lookup",
+    "request_schema_and_target_gate",
+    "rate_quota_concurrency_gate",
+    "url_normalization",
+    "source_metadata_probe",
+    "visibility_gate",
+    "live_gate",
+    "embeddability_gate",
+    "duration_gate",
+    "language_gate",
+    "caption_availability_and_parseability_gate",
+    "dedupe_lookup",
+    "atomic_job_create"
+  ],
+  "preflight": {
+    "maximumDurationSeconds": 900,
+    "sourceLanguage": "en",
+    "captionLanguage": "en",
+    "gateOrder": [
+      "visibility",
+      "live",
+      "embeddability",
+      "duration",
+      "language",
+      "captions"
+    ],
+    "errors": {
+      "visibility": "video_private",
+      "live": "video_live",
+      "embeddability": "video_not_embeddable",
+      "duration": "video_too_long",
+      "language": "non_english",
+      "captions": "captions_unavailable"
+    }
+  },
+  "providerEntryGuards": {
+    "quota": {
+      "errorCode": "quota_exceeded",
+      "wireShape": "APIError",
+      "jobMayExist": false,
+      "mustRunBeforeSourceProbe": true
+    },
+    "cost": {
+      "errorCode": "cost_limit_exceeded",
+      "wireShape": "ProcessingJob(status=failed)",
+      "jobMayExist": true,
+      "mustRunBeforeAsyncCaptionOrTranslationProvider": true,
+      "thresholdEvidence": "NOT_RUN_D2"
+    }
+  },
+  "handoff": {
+    "dedupeKeyFields": ["videoId", "sourceLanguage", "targetLanguage", "pipelineVersion"],
+    "sourceLanguage": "en",
+    "targetLanguage": "zh-Hant-TW",
+    "pipelineVersionFixture": "release-a-caption-v1"
+  },
+  "rejectionEffects": {
+    "jobCreated": false,
+    "jobIdReturned": false,
+    "captionPipelineStarts": 0,
+    "translationCalls": 0,
+    "audioDownloads": 0,
+    "sttCalls": 0
+  },
+  "openDecisions": [
+    {
+      "id": "D2-A",
+      "state": "OPEN",
+      "decision": "caption/LLM provider, timeout, pipeline version release value, and per-job cost cap"
+    },
+    {
+      "id": "D3-A",
+      "state": "OPEN",
+      "decision": "20-video Release A preflight/latency corpus and environment"
+    },
+    {
+      "id": "UP-01",
+      "state": "OPEN",
+      "decision": "Whether mobile/music/embed/shorts URLs or non-HTTPS schemes become supported beyond the two PRD URL forms"
+    },
+    {
+      "id": "UP-02",
+      "state": "OPEN",
+      "decision": "Concrete source metadata/caption adapter and authoritative English/caption-parseability signals"
+    }
+  ]
+}

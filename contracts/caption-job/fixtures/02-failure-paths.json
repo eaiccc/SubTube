@@ -1,0 +1,76 @@
+{
+  "contractVersion": "1.0.0",
+  "kind": "failure_paths",
+  "cases": [
+    {
+      "case": "queued_can_fail_before_provider_entry",
+      "fromStatus": "queued",
+      "snapshot": {
+        "jobId": "job-failure-queued",
+        "videoId": "QueueFail01",
+        "title": "Queued failure fixture",
+        "duration": 60,
+        "status": "failed",
+        "errorCode": "cost_limit_exceeded",
+        "errorMessageKey": "parse.error.costLimitExceeded",
+        "retryable": false,
+        "learningDataPath": null,
+        "updatedAt": "2026-08-26T03:00:01Z"
+      },
+      "expectedEffects": { "successfulCacheWritten": false, "captionPipelineStartsTotal": 0, "translationCallsTotal": 0, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    },
+    {
+      "case": "fetching_captions_can_fail",
+      "fromStatus": "fetching_captions",
+      "snapshot": {
+        "jobId": "job-failure-caption",
+        "videoId": "FetchFail01",
+        "title": "Caption failure fixture",
+        "duration": 70,
+        "status": "failed",
+        "errorCode": "caption_fetch_failed",
+        "errorMessageKey": "parse.error.captionFetchFailed",
+        "retryable": true,
+        "learningDataPath": null,
+        "updatedAt": "2026-08-26T03:01:01Z"
+      },
+      "expectedEffects": { "successfulCacheWritten": false, "captionPipelineStartsTotal": 1, "translationCallsTotal": 0, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    },
+    {
+      "case": "translating_can_fail",
+      "fromStatus": "translating",
+      "snapshot": {
+        "jobId": "job-failure-translation",
+        "videoId": "TransFail01",
+        "title": "Translation failure fixture",
+        "duration": 80,
+        "status": "failed",
+        "errorCode": "translation_provider_failed",
+        "errorMessageKey": "parse.error.translationProviderFailed",
+        "retryable": true,
+        "learningDataPath": null,
+        "updatedAt": "2026-08-26T03:02:01Z"
+      },
+      "expectedEffects": { "successfulCacheWritten": false, "captionPipelineStartsTotal": 1, "translationCallsTotal": 1, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    },
+    {
+      "case": "malformed_translation_fails_after_one_automatic_retry",
+      "fromStatus": "translating",
+      "automaticRetryMaximum": 1,
+      "automaticRetriesUsed": 1,
+      "snapshot": {
+        "jobId": "job-failure-json",
+        "videoId": "BadJson0001",
+        "title": "Malformed translation fixture",
+        "duration": 90,
+        "status": "failed",
+        "errorCode": "translation_invalid_response",
+        "errorMessageKey": "parse.error.translationInvalidResponse",
+        "retryable": true,
+        "learningDataPath": null,
+        "updatedAt": "2026-08-26T03:03:01Z"
+      },
+      "expectedEffects": { "successfulCacheWritten": false, "captionPipelineStartsTotal": 1, "translationCallsTotal": 2, "audioDownloadsTotal": 0, "sttCallsTotal": 0 }
+    }
+  ]
+}
