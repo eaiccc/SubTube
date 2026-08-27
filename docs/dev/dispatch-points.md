@@ -136,15 +136,15 @@ Dispatch loop 只可在下列情況停止，且 final report 必須指出是哪�
 
 ## 5. SubTube 現況與 GitHub 邊界
 
-目前 SubTube source checkout 已連結獨立 repository `eaiccc/SubTube`，但仍沒有 runtime、build scheme 或部署腳本。既有 GitHub ticket 暫放在 `eaiccc/Anki2`，Project 為使用者的 `SubTube MVP` #2；這是權限下的暫時 ticket repo，不代表 SubTube 與 Anki2 共用產品程式碼。
+目前 SubTube source checkout 與 GitHub ticket 都已連結獨立 repository `eaiccc/SubTube`，但仍沒有 runtime、build scheme 或部署腳本；既有 SubTube ticket 已從暫存位置 `eaiccc/Anki2` 搬遷。Project 為使用者的 `SubTube MVP` #2；這不代表 SubTube 與 Anki2 共用產品程式碼。
 
 所有 script 都要求明確提供：
 
 ```bash
-export SUBTUBE_GITHUB_REPO=eaiccc/Anki2
+export SUBTUBE_GITHUB_REPO=eaiccc/SubTube
 ```
 
-即使工單暫放在 Anki2，也不得把 Anki2 的 iOS build command、SwiftData、訂閱、SM-2、child-mode 或其他 Anki2 專案規則複製進 SubTube。
+不得把 Anki2 的 iOS build command、SwiftData、訂閱、SM-2、child-mode 或其他 Anki2 專案規則複製進 SubTube。
 
 ## 6. Full situation report
 

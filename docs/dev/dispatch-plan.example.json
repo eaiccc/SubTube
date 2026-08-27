@@ -1,7 +1,7 @@
 {
   "dispatch_id": "dispatch-example",
   "project": "SubTube MVP",
-  "repo": "eaiccc/Anki2",
+  "repo": "eaiccc/SubTube",
   "budget_sp": 15,
   "target_budget_sp": 10,
   "completion_mode": "each_ticket",

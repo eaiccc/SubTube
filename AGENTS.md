@@ -67,7 +67,7 @@ Operational defaults:
 - Release A gates Release B. Do not dispatch STT implementation while D1/D2/D3 or the API/state contract gate is unresolved.
 - `planned`, `waiting_dependency`, and `wait_for_agent` are non-terminal controller states. The main session must dispatch the dependency, call the agent wait mechanism, consume the final evidence, and continue; it must not return a final response merely because a plan was created.
 
-The SubTube source repository is `eaiccc/SubTube`. The current GitHub ticket repository remains a temporary external location (`eaiccc/Anki2`) until ticket migration; it is not the SubTube source repository. Scripts must receive `--repo` or `SUBTUBE_GITHUB_REPO`; never infer a repository from the folder name.
+The SubTube source and GitHub ticket repository is `eaiccc/SubTube`; the SubTube tickets were migrated from the temporary `eaiccc/Anki2` location. Scripts must receive `--repo` or `SUBTUBE_GITHUB_REPO`; never infer a repository from the folder name.
 
 ## Working Rules
 

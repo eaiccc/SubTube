@@ -74,7 +74,7 @@ bash scripts/progress/log_progress.sh \
   --task-id issue-1725 \
   --status in_progress \
   --issue 1725 \
-  --repo eaiccc/Anki2 \
+  --repo eaiccc/SubTube \
   --points 5 \
   --ac "MVP-01; AC-01" \
   --evidence "NOT RUN — runtime not established"
@@ -84,7 +84,7 @@ bash scripts/progress/log_progress.sh \
 
 ```bash
 bash scripts/progress/update_github_issue.sh \
-  --repo eaiccc/Anki2 \
+  --repo eaiccc/SubTube \
   --issue 1725 \
   --status review_ready \
   --agent codex-uhura-pro \
